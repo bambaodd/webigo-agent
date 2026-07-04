@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Webigo</title>
+<style>
+  :root {
+    --navy: #1A3C5E;
+    --blue: #2563EB;
+    --blue-light: #3B82F6;
+    --blue-pale: #DBEAFE;
+    --white: #FFFFFF;
+    --gray-50: #F8FAFC;
+    --gray-100: #F1F5F9;
+    --gray-200: #E2E8F0;
+    --gray-400: #94A3B8;
+    --gray-600: #475569;
+    --gray-800: #1E293B;
+    --green: #16A34A;
+    --green-pale: #DCFCE7;
+    --red: #DC2626;
+    --red-pale: #FEE2E2;
+    --orange: #D97706;
+    --orange-pale: #FEF3C7;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font); background: var(--gray-50); color: var(--gray-800); display: flex; height: 100vh; overflow: hidden; }
+
+  /* SIDEBAR */
+  #sidebar {
+    width: 220px; min-width: 220px; background: var(--navy); display: flex; flex-direction: column;
+    height: 100vh; position: relative; z-index: 10;
+  }
+  #sidebar .logo {
+    padding: 20px 20px 16px; border-bottom: 1px solid rgba(255,255,255,0.1);
+    font-size: 22px; font-weight: 800; color: white; letter-spacing: 2px;
+  }
+  #sidebar .logo span { color: var(--blue-light); }
+  #sidebar nav { flex: 1; padding: 12px 0; overflow-y: auto; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px; padding: 11px 20px;
+    color: rgba(255,255,255,0.65); cursor: pointer; font-size: 14px; font-weight: 500;
+    transition: all 0.15s; border-left: 3px solid transparent; white-space: nowrap;
+  }
+  .nav-item:hover { color: white; background: rgba(255,255,255,0.07); }
+  .nav-item.active { color: white; background: rgba(37,99,235,0.3); border-left-color: var(--blue-light); }
+  .nav-item .icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+  .nav-section { padding: 16px 20px 6px; font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 1px; }
+  #sidebar .bottom { padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 12px; color: rgba(255,255,255,0.4); }
+
+  /* MAIN */
+  #main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  #topbar {
+    background: white; border-bottom: 1px solid var(--gray-200); padding: 0 24px;
+    height: 56px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+  }
+  #topbar .page-title { font-size: 16px; font-weight: 700; color: var(--navy); }
+  #topbar .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .badge { background: var(--blue); color: white; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 12px; }
+  #content { flex: 1; overflow-y: auto; padding: 24px; }
+
+  /* CARDS */
+  .card { background: white; border-radius: 10px; border: 1px solid var(--gray-200); padding: 20px; }
+  .card-title { font-size: 12px; font-weight: 600; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+
+  /* GRID */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+  /* STAT CARDS */
+  .stat-card { background: white; border-radius: 10px; border: 1px solid var(--gray-200); padding: 18px 20px; }
+  .stat-value { font-size: 28px; font-weight: 800; color: var(--navy); line-height: 1; }
+  .stat-label { font-size: 12px; color: var(--gray-400); margin-top: 4px; font-weight: 500; }
+  .stat-sub { font-size: 11px; color: var(--green); margin-top: 2px; }
+  .stat-card.revenue .stat-value { color: var(--green); }
+  .stat-card.blue .stat-value { color: var(--blue); }
+
+  /* MARKET CARDS */
+  .market-card {
+    background: white; border-radius: 10px; border: 1px solid var(--gray-200);
+    padding: 14px 16px; display: flex; align-items: center; justify-content: space-between;
+  }
+  .market-card.open { border-color: var(--green); background: var(--green-pale); }
+  .market-card.closed { opacity: 0.7; }
+  .market-flag { font-size: 22px; }
+  .market-info { flex: 1; margin-left: 10px; }
+  .market-name { font-size: 13px; font-weight: 700; color: var(--navy); text-transform: capitalize; }
+  .market-time { font-size: 18px; font-weight: 800; color: var(--gray-800); }
+  .market-date { font-size: 11px; color: var(--gray-400); }
+  .market-status { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 20px; }
+  .market-status.open { background: var(--green); color: white; }
+  .market-status.closed { background: var(--gray-200); color: var(--gray-600); }
+  .market-status.weekend { background: var(--orange-pale); color: var(--orange); }
+  .my-time { font-size: 11px; color: var(--gray-600); margin-top: 2px; }
+
+  /* PIPELINE */
+  .pipeline { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; }
+  .pipeline-col { min-width: 160px; background: var(--gray-100); border-radius: 8px; padding: 10px; }
+  .pipeline-col-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 2px solid var(--gray-200); }
+  .pipeline-count { float: right; background: var(--navy); color: white; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 10px; }
+  .pipeline-card { background: white; border-radius: 6px; padding: 10px; margin-bottom: 8px; border: 1px solid var(--gray-200); cursor: pointer; font-size: 12px; }
+  .pipeline-card:hover { border-color: var(--blue); }
+  .pipeline-card .pc-name { font-weight: 700; color: var(--navy); margin-bottom: 3px; }
+  .pipeline-card .pc-cat { color: var(--gray-400); font-size: 11px; }
+
+  /* LEADS TABLE */
+  .leads-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .leads-table th { background: var(--gray-100); color: var(--gray-600); font-weight: 600; padding: 10px 14px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid var(--gray-200); position: sticky; top: 0; z-index: 1; }
+  .leads-table td { padding: 10px 14px; border-bottom: 1px solid var(--gray-100); vertical-align: middle; }
+  .leads-table tr:hover td { background: var(--blue-pale); cursor: pointer; }
+  .lead-name { font-weight: 700; color: var(--navy); }
+  .lead-city { color: var(--gray-400); font-size: 12px; }
+
+  /* STAGE BADGES */
+  .stage { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+  .stage-new { background: var(--gray-100); color: var(--gray-600); }
+  .stage-contacted { background: var(--blue-pale); color: var(--blue); }
+  .stage-responded { background: #FEF3C7; color: #D97706; }
+  .stage-hot { background: #FEE2E2; color: #DC2626; }
+  .stage-negotiation { background: #F3E8FF; color: #7C3AED; }
+  .stage-demo { background: #ECFDF5; color: #059669; }
+  .stage-closed { background: var(--green-pale); color: var(--green); }
+  .stage-lost { background: var(--gray-100); color: var(--gray-400); }
+
+  /* TEMP DOT */
+  .temp-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+  .temp-cold .temp-dot { background: var(--gray-400); }
+  .temp-warm .temp-dot { background: var(--orange); }
+  .temp-hot .temp-dot { background: var(--red); }
+
+  /* FORMS */
+  .form-group { margin-bottom: 14px; }
+  .form-label { font-size: 12px; font-weight: 600; color: var(--gray-600); display: block; margin-bottom: 5px; }
+  input, select, textarea {
+    width: 100%; padding: 9px 12px; border: 1px solid var(--gray-200); border-radius: 7px;
+    font-size: 13px; font-family: var(--font); color: var(--gray-800); background: white;
+    transition: border 0.15s;
+  }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-pale); }
+  textarea { resize: vertical; min-height: 80px; }
+
+  /* BUTTONS */
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px; border-radius: 7px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; font-family: var(--font); }
+  .btn-primary { background: var(--blue); color: white; }
+  .btn-primary:hover { background: #1D4ED8; }
+  .btn-secondary { background: var(--gray-100); color: var(--gray-800); border: 1px solid var(--gray-200); }
+  .btn-secondary:hover { background: var(--gray-200); }
+  .btn-danger { background: var(--red); color: white; }
+  .btn-danger:hover { background: #B91C1C; }
+  .btn-success { background: var(--green); color: white; }
+  .btn-success:hover { background: #15803D; }
+  .btn-sm { padding: 5px 11px; font-size: 12px; }
+  .btn-navy { background: var(--navy); color: white; }
+  .btn-navy:hover { background: #0F2A44; }
+
+  /* SCRAPER */
+  .progress-bar-wrap { background: var(--gray-100); border-radius: 6px; height: 10px; overflow: hidden; margin: 10px 0; }
+  .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--blue), var(--blue-light)); border-radius: 6px; transition: width 0.4s ease; }
+  .scrape-log { background: var(--gray-800); border-radius: 8px; padding: 12px; font-family: monospace; font-size: 12px; color: #A3E635; max-height: 180px; overflow-y: auto; }
+  .scrape-log .log-line { margin-bottom: 3px; }
+  .scrape-log .log-line.found { color: #4ADE80; }
+  .scrape-log .log-line.searching { color: #60A5FA; }
+
+  /* TODOS */
+  .todo-item { display: flex; align-items: flex-start; gap: 10px; padding: 12px; border-bottom: 1px solid var(--gray-100); }
+  .todo-item:last-child { border-bottom: none; }
+  .todo-check { width: 18px; height: 18px; border-radius: 4px; border: 2px solid var(--gray-300); cursor: pointer; flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; }
+  .todo-check.done { background: var(--green); border-color: var(--green); color: white; font-size: 10px; }
+  .todo-content { flex: 1; }
+  .todo-title { font-size: 13px; font-weight: 600; color: var(--gray-800); }
+  .todo-title.done { text-decoration: line-through; color: var(--gray-400); }
+  .todo-desc { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+  .todo-meta { display: flex; gap: 8px; margin-top: 5px; }
+  .priority-urgent { color: var(--red); font-size: 11px; font-weight: 700; }
+  .priority-high { color: var(--orange); font-size: 11px; font-weight: 700; }
+  .priority-medium { color: var(--blue); font-size: 11px; font-weight: 700; }
+  .priority-low { color: var(--gray-400); font-size: 11px; }
+
+  /* CALLS */
+  .call-card { background: white; border: 1px solid var(--gray-200); border-radius: 8px; padding: 16px; margin-bottom: 10px; }
+  .call-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .call-name { font-weight: 700; color: var(--navy); }
+  .call-date { font-size: 12px; color: var(--gray-400); }
+  .call-wisdom { background: linear-gradient(135deg, var(--navy), #1e4d7b); border-radius: 10px; padding: 16px 20px; color: white; margin-bottom: 20px; }
+  .call-wisdom .wisdom-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.5); margin-bottom: 8px; }
+  .call-wisdom .wisdom-text { font-size: 14px; color: rgba(255,255,255,0.9); line-height: 1.5; font-style: italic; }
+
+  /* AI CHAT */
+  .chat-wrap { display: flex; flex-direction: column; height: 100%; }
+  .chat-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; background: var(--gray-50); border-radius: 8px; margin-bottom: 12px; min-height: 300px; }
+  .chat-bubble { max-width: 75%; padding: 10px 14px; border-radius: 10px; font-size: 13px; line-height: 1.5; }
+  .chat-bubble.user { background: var(--blue); color: white; align-self: flex-end; border-bottom-right-radius: 3px; }
+  .chat-bubble.ai { background: white; color: var(--gray-800); border: 1px solid var(--gray-200); align-self: flex-start; border-bottom-left-radius: 3px; }
+  .chat-presets { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .preset-btn { background: var(--blue-pale); color: var(--blue); border: none; padding: 5px 11px; border-radius: 16px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: var(--font); }
+  .preset-btn:hover { background: var(--blue); color: white; }
+  .chat-input-row { display: flex; gap: 8px; }
+  .chat-input-row input { flex: 1; }
+
+  /* MODAL */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; display: flex; align-items: flex-start; justify-content: center; padding: 40px 20px; overflow-y: auto; }
+  .modal { background: white; border-radius: 12px; width: 100%; max-width: 680px; padding: 28px; position: relative; }
+  .modal-close { position: absolute; top: 16px; right: 16px; background: var(--gray-100); border: none; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-size: 16px; color: var(--gray-600); }
+  .modal-title { font-size: 18px; font-weight: 800; color: var(--navy); margin-bottom: 20px; }
+  .modal-section { margin-bottom: 16px; }
+  .modal-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gray-400); margin-bottom: 8px; }
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .info-item .info-label { font-size: 11px; color: var(--gray-400); font-weight: 600; }
+  .info-item .info-val { font-size: 13px; font-weight: 600; color: var(--gray-800); }
+
+  /* LEAD DETAIL */
+  .social-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .social-chip { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; background: var(--blue-pale); color: var(--blue); border-radius: 20px; font-size: 12px; font-weight: 600; text-decoration: none; }
+  .social-chip:hover { background: var(--blue); color: white; }
+  .message-bubble { padding: 8px 12px; border-radius: 8px; font-size: 13px; margin-bottom: 8px; max-width: 80%; }
+  .message-bubble.out { background: var(--blue); color: white; margin-left: auto; border-bottom-right-radius: 2px; }
+  .message-bubble.in { background: var(--gray-100); color: var(--gray-800); border-bottom-left-radius: 2px; }
+  .message-meta { font-size: 10px; opacity: 0.7; margin-top: 2px; }
+
+  /* TOOLS */
+  .tool-card { background: white; border: 1px solid var(--gray-200); border-radius: 10px; padding: 16px; display: flex; align-items: flex-start; gap: 12px; }
+  .tool-icon { font-size: 26px; flex-shrink: 0; }
+  .tool-name { font-weight: 700; color: var(--navy); font-size: 14px; }
+  .tool-desc { font-size: 12px; color: var(--gray-600); margin-top: 3px; line-height: 1.5; }
+  .tool-link { font-size: 12px; color: var(--blue); margin-top: 6px; display: inline-block; font-weight: 600; }
+
+  /* EMPTY STATE */
+  .empty { text-align: center; padding: 48px 20px; color: var(--gray-400); }
+  .empty .empty-icon { font-size: 40px; margin-bottom: 12px; }
+  .empty .empty-text { font-size: 14px; }
+
+  /* TAB ROW */
+  .tab-row { display: flex; gap: 4px; margin-bottom: 20px; background: var(--gray-100); padding: 4px; border-radius: 8px; width: fit-content; }
+  .tab-btn { padding: 7px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; background: none; color: var(--gray-600); font-family: var(--font); transition: all 0.15s; }
+  .tab-btn.active { background: white; color: var(--navy); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+
+  /* SECTION HEADING */
+  .section-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .section-title { font-size: 16px; font-weight: 800; color: var(--navy); }
+
+  /* MISC */
+  .divider { border: none; border-top: 1px solid var(--gray-100); margin: 16px 0; }
+  .text-sm { font-size: 12px; }
+  .text-muted { color: var(--gray-400); }
+  .stars { color: #F59E0B; }
+  .loading { display: flex; align-items: center; gap: 8px; color: var(--gray-400); font-size: 13px; padding: 20px; }
+  .spinner { width: 18px; height: 18px; border: 2px solid var(--gray-200); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .ai-box { background: linear-gradient(135deg, #EFF6FF, #DBEAFE); border: 1px solid #BFDBFE; border-radius: 8px; padding: 14px; margin-top: 10px; }
+  .ai-box-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--blue); margin-bottom: 6px; }
+  .ai-box-text { font-size: 13px; color: var(--gray-800); line-height: 1.6; }
+
+  @media (max-width: 900px) {
+    #sidebar { width: 56px; min-width: 56px; }
+    .nav-item span, .nav-section, #sidebar .logo { display: none; }
+    .grid-4 { grid-template-columns: 1fr 1fr; }
+    .grid-3 { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="logo">WEB<span>IGO</span></div>
+  <nav>
+    <div class="nav-section">Overview</div>
+    <div class="nav-item active" data-tab="dashboard"><span class="icon">📊</span><span>Dashboard</span></div>
+    <div class="nav-item" data-tab="markets"><span class="icon">🌍</span><span>Markets</span></div>
+
+    <div class="nav-section">Leads</div>
+    <div class="nav-item" data-tab="scraper"><span class="icon">🔍</span><span>Scraper</span></div>
+    <div class="nav-item" data-tab="leads"><span class="icon">👥</span><span>All Leads</span></div>
+    <div class="nav-item" data-tab="pipeline"><span class="icon">📋</span><span>Pipeline</span></div>
+
+    <div class="nav-section">Sales</div>
+    <div class="nav-item" data-tab="calls"><span class="icon">📞</span><span>Calls</span></div>
+    <div class="nav-item" data-tab="scripts"><span class="icon">📖</span><span>Scripts</span></div>
+    <div class="nav-item" data-tab="aichat"><span class="icon">🤖</span><span>AI Chat</span></div>
+
+    <div class="nav-section">Work</div>
+    <div class="nav-item" data-tab="todos"><span class="icon">✅</span><span>To-Do</span></div>
+    <div class="nav-item" data-tab="video"><span class="icon">🎥</span><span>Demo Video</span></div>
+    <div class="nav-item" data-tab="tools"><span class="icon">🧰</span><span>Toolbox</span></div>
+  </nav>
+  <div class="bottom">v2.0</div>
+</nav>
+
+<!-- MAIN -->
+<div id="main">
+  <div id="topbar">
+    <div class="page-title" id="topbar-title">Dashboard</div>
+    <div class="topbar-right">
+      <div id="topbar-clock" style="font-size:13px;color:var(--gray-600);font-weight:600;"></div>
+      <div class="badge" id="hot-badge">0 Hot</div>
+    </div>
+  </div>
+  <div id="content"></div>
+</div>
+
+<!-- LEAD DETAIL MODAL -->
+<div id="lead-modal" class="modal-overlay" style="display:none;">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────────────────────
+const state = {
+  currentTab: 'dashboard',
+  leads: [], total: 0,
+  stats: null,
+  todos: [],
+  calls: [],
+  scrapeJobs: {},
+  chatHistory: [],
+  scrapeLog: [],
+  markets: {}
+};
+
+// ── API ────────────────────────────────────────────────────────────────────
+async function api(method, path, body) {
+  try {
+    const opts = { method, headers: { 'Content-Type': 'application/json' } };
+    if (body) opts.body = JSON.stringify(body);
+    const res = await fetch(path, opts);
+    if (!res.ok) throw new Error(`${res.status}`);
+    return res.json();
+  } catch (e) {
+    console.error(path, e.message);
+    return null;
+  }
+}
+const GET  = (p) => api('GET', p);
+const POST = (p, b) => api('POST', p, b);
+const PATCH = (p, b) => api('PATCH', p, b);
+
+// ── SSE ────────────────────────────────────────────────────────────────────
+function startSSE() {
+  const es = new EventSource('/api/stream');
+  es.onmessage = (e) => {
+    const data = JSON.parse(e.data);
+    if (data.type === 'scrape_progress') handleScrapeProgress(data);
+  };
+}
+
+function handleScrapeProgress(d) {
+  const line = d.status === 'found'
+    ? `✓ Found: ${d.leadName} (${d.found}/${d.target})`
+    : d.status === 'completed'
+    ? `✅ Complete — ${d.found} leads found`
+    : `🔍 Searching ${d.category} in ${d.city}... (${d.found}/${d.target})`;
+
+  state.scrapeLog.unshift({ text: line, type: d.status });
+  if (state.scrapeLog.length > 50) state.scrapeLog.pop();
+
+  if (state.currentTab === 'scraper') {
+    const logEl = document.getElementById('scrape-log');
+    if (logEl) logEl.innerHTML = state.scrapeLog.map(l =>
+      `<div class="log-line ${l.type === 'found' ? 'found' : 'searching'}">${l.text}</div>`).join('');
+
+    const pct = Math.round((d.found / d.target) * 100);
+    const fill = document.getElementById('progress-fill');
+    const pctEl = document.getElementById('progress-pct');
+    if (fill) fill.style.width = pct + '%';
+    if (pctEl) pctEl.textContent = pct + '%';
+  }
+}
+
+// ── NAVIGATION ─────────────────────────────────────────────────────────────
+const TAB_TITLES = {
+  dashboard:'Dashboard', markets:'Markets', scraper:'Lead Scraper',
+  leads:'All Leads', pipeline:'Pipeline', calls:'Calls', scripts:'Sales Scripts',
+  aichat:'AI Chat', todos:'To-Do', video:'Demo Video', tools:'Toolbox'
+};
+
+document.querySelectorAll('.nav-item').forEach(el => {
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    el.classList.add('active');
+    const tab = el.dataset.tab;
+    state.currentTab = tab;
+    document.getElementById('topbar-title').textContent = TAB_TITLES[tab] || tab;
+    renderTab(tab);
+  });
+});
+
+async function renderTab(tab) {
+  const c = document.getElementById('content');
+  c.innerHTML = '<div class="loading"><div class="spinner"></div> Loading...</div>';
+  switch(tab) {
+    case 'dashboard': await renderDashboard(); break;
+    case 'markets':   await renderMarkets(); break;
+    case 'scraper':   renderScraper(); break;
+    case 'leads':     await renderLeads(); break;
+    case 'pipeline':  await renderPipeline(); break;
+    case 'calls':     await renderCalls(); break;
+    case 'scripts':   await renderScripts(); break;
+    case 'aichat':    renderAIChat(); break;
+    case 'todos':     await renderTodos(); break;
+    case 'video':     renderVideo(); break;
+    case 'tools':     renderTools(); break;
+  }
+}
+
+// ── DASHBOARD ──────────────────────────────────────────────────────────────
+async function renderDashboard() {
+  const stats = await GET('/api/stats');
+  if (!stats) { document.getElementById('content').innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-text">Could not load stats. Check server.</div></div>'; return; }
+  state.stats = stats;
+
+  const hotCount = (stats.pipeline.hot || 0) + (stats.pipeline.negotiation || 0);
+  document.getElementById('hot-badge').textContent = `${hotCount} Hot`;
+
+  document.getElementById('content').innerHTML = `
+    <div class="grid-4" style="margin-bottom:20px;">
+      <div class="stat-card revenue">
+        <div class="card-title">Revenue Today</div>
+        <div class="stat-value">€${stats.revenue.today.toFixed(0)}</div>
+        <div class="stat-sub">€${stats.revenue.week.toFixed(0)} this week · €${stats.revenue.month.toFixed(0)} this month</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="card-title">New Leads Today</div>
+        <div class="stat-value">${stats.leads.today}</div>
+        <div class="stat-sub">${stats.leads.week} this week · ${stats.leads.month} this month</div>
+      </div>
+      <div class="stat-card">
+        <div class="card-title">Leads Contacted</div>
+        <div class="stat-value">${stats.leads.contacted}</div>
+        <div class="stat-sub">total contacted</div>
+      </div>
+      <div class="stat-card">
+        <div class="card-title">Today's Activity</div>
+        <div class="stat-value">${stats.activity.calls + stats.activity.emails + stats.activity.whatsapps}</div>
+        <div class="stat-sub">📞 ${stats.activity.calls} calls · ✉️ ${stats.activity.emails} emails · 💬 ${stats.activity.whatsapps} WA</div>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:20px;">
+      <div class="card">
+        <div class="section-heading">
+          <div class="section-title">Pipeline Overview</div>
+          <button class="btn btn-secondary btn-sm" onclick="navigate('pipeline')">View Full →</button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          ${Object.entries({
+            'New': stats.pipeline.new || 0,
+            'Contacted': stats.pipeline.contacted || 0,
+            'Responded': stats.pipeline.responded || 0,
+            'Hot': stats.pipeline.hot || 0,
+            'Negotiation': stats.pipeline.negotiation || 0,
+            'Closed': stats.pipeline.closed || 0
+          }).map(([k,v]) => `
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="width:90px;font-size:12px;font-weight:600;color:var(--gray-600);">${k}</div>
+              <div style="flex:1;background:var(--gray-100);border-radius:4px;height:8px;">
+                <div style="width:${Math.min(100, v * 8)}%;background:var(--blue);height:100%;border-radius:4px;"></div>
+              </div>
+              <div style="width:30px;text-align:right;font-size:12px;font-weight:700;color:var(--navy);">${v}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-heading">
+          <div class="section-title">Hot Leads</div>
+          <button class="btn btn-secondary btn-sm" onclick="navigate('leads')">All Leads →</button>
+        </div>
+        <div id="hot-leads-mini">Loading...</div>
+      </div>
+    </div>
+  `;
+
+  const hot = await GET('/api/leads?stage=hot&limit=5');
+  const hotEl = document.getElementById('hot-leads-mini');
+  if (hotEl) {
+    hotEl.innerHTML = hot?.leads?.length ? hot.leads.map(l => `
+      <div onclick="openLead(${l.id})" style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--gray-100);cursor:pointer;">
+        <div>
+          <div style="font-weight:700;font-size:13px;color:var(--navy);">${l.name}</div>
+          <div style="font-size:11px;color:var(--gray-400);">${l.category} · ${l.city}</div>
+        </div>
+        <span class="stage stage-hot">🔥 Hot</span>
+      </div>`).join('') : '<div class="empty" style="padding:20px;"><div class="empty-text">No hot leads yet. Start scraping!</div></div>';
+  }
+}
+
+// ── MARKETS ────────────────────────────────────────────────────────────────
+async function renderMarkets() {
+  const markets = await GET('/api/markets/times');
+  if (!markets) return;
+
+  const swedenTime = markets.sweden?.localTime || '';
+
+  document.getElementById('content').innerHTML = `
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-title" style="margin-bottom:4px;">Your time (Sweden)</div>
+      <div style="font-size:32px;font-weight:800;color:var(--navy);">${swedenTime}</div>
+      <div style="font-size:13px;color:var(--gray-400);">${markets.sweden?.localDate || ''} · Europe/Stockholm</div>
+    </div>
+    <div class="grid-3">
+      ${Object.entries(markets).filter(([k]) => k !== 'sweden').map(([market, info]) => {
+        const statusClass = info.isWeekend ? 'weekend' : info.isBusinessHours ? 'open' : 'closed';
+        const statusText = info.isWeekend ? '🌙 Weekend' : info.isBusinessHours ? '✓ Open' : '✕ Closed';
+        return `
+          <div class="market-card ${info.isBusinessHours && !info.isWeekend ? 'open' : 'closed'}">
+            <div class="market-flag">${info.flag}</div>
+            <div class="market-info">
+              <div class="market-name">${market}</div>
+              <div class="market-time">${info.localTime}</div>
+              <div class="market-date">${info.localDate}</div>
+              <div class="my-time" style="font-size:10px;color:var(--gray-500);margin-top:3px;">
+                Sweden time: ${swedenTime}
+              </div>
+            </div>
+            <span class="market-status ${statusClass}">${statusText}</span>
+          </div>`;
+      }).join('')}
+    </div>`;
+
+  // Live clock
+  setInterval(() => {
+    const now = new Date();
+    const swTime = now.toLocaleTimeString('en-US', { timeZone: 'Europe/Stockholm', hour:'2-digit', minute:'2-digit', hour12: false });
+    document.getElementById('topbar-clock').textContent = swTime;
+  }, 1000);
+}
+
+// ── SCRAPER ────────────────────────────────────────────────────────────────
+function renderScraper() {
+  document.getElementById('content').innerHTML = `
+    <div class="grid-2">
+      <div class="card">
+        <div class="section-title" style="margin-bottom:16px;">Start New Scrape</div>
+        <div class="form-group">
+          <label class="form-label">Country</label>
+          <select id="scrape-country">
+            <option value="sweden">🇸🇪 Sweden</option>
+            <option value="uk">🇬🇧 United Kingdom</option>
+            <option value="us">🇺🇸 United States</option>
+            <option value="australia">🇦🇺 Australia</option>
+            <option value="canada">🇨🇦 Canada</option>
+            <option value="norway">🇳🇴 Norway</option>
+            <option value="finland">🇫🇮 Finland</option>
+            <option value="denmark">🇩🇰 Denmark</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Business Category</label>
+          <select id="scrape-category">
+            <option value="restaurant">Restaurant / Cafe / Bar</option>
+            <option value="salon">Salon / Barbershop / Beauty</option>
+            <option value="gym">Gym / Fitness Studio</option>
+            <option value="plumber">Plumber / Electrician / Tradesman</option>
+            <option value="accountant">Accountant / Lawyer / Consultant</option>
+            <option value="retail shop">Retail Shop / Boutique</option>
+            <option value="cleaning service">Cleaning / Landscaping</option>
+            <option value="dental clinic">Medical / Dental / Wellness</option>
+            <option value="auto repair">Auto Repair / Car Service</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Target Count (min 50)</label>
+          <input type="number" id="scrape-count" value="50" min="50" max="500">
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-primary" onclick="startScrape()">🔍 Start Scraping</button>
+          <button class="btn btn-secondary" onclick="stopScrape()">⏹ Stop</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-title" style="margin-bottom:12px;">Progress</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <span id="progress-label" style="font-size:13px;color:var(--gray-600);">Not started</span>
+          <span id="progress-pct" style="font-size:13px;font-weight:700;color:var(--navy);">0%</span>
+        </div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+        </div>
+        <div style="margin-top:12px;font-size:12px;color:var(--gray-400);margin-bottom:6px;">Live Log</div>
+        <div class="scrape-log" id="scrape-log"><div class="log-line searching">Waiting to start...</div></div>
+      </div>
+    </div>`;
+}
+
+let currentJobId = null;
+async function startScrape() {
+  const country = document.getElementById('scrape-country').value;
+  const category = document.getElementById('scrape-category').value;
+  const count = parseInt(document.getElementById('scrape-count').value) || 50;
+
+  const pLabel = document.getElementById('progress-label');
+  if (pLabel) pLabel.textContent = `Scraping ${category} in ${country}...`;
+
+  const result = await POST('/api/scrape/start', { country, category, targetCount: count });
+  if (result?.jobId) {
+    currentJobId = result.jobId;
+    state.scrapeLog = [];
+  }
+}
+
+function stopScrape() {
+  if (currentJobId) {
+    POST('/api/scrape/stop', { jobId: currentJobId });
+    currentJobId = null;
+  }
+}
+
+// ── LEADS ──────────────────────────────────────────────────────────────────
+async function renderLeads(country = '', category = '', stage = '', search = '') {
+  const params = new URLSearchParams({ limit: 200 });
+  if (country) params.set('country', country);
+  if (category) params.set('category', category);
+  if (stage) params.set('stage', stage);
+  if (search) params.set('search', search);
+
+  const data = await GET('/api/leads?' + params);
+  const leads = data?.leads || [];
+
+  const countries = [...new Set(leads.map(l => l.country).filter(Boolean))];
+  const categories = [...new Set(leads.map(l => l.category).filter(Boolean))];
+
+  document.getElementById('content').innerHTML = `
+    <div class="card" style="margin-bottom:16px;padding:14px 20px;">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <input type="text" placeholder="Search leads..." style="width:200px;" id="lead-search" value="${search}" oninput="debounceSearch()">
+        <select id="filter-country" onchange="applyFilters()" style="width:140px;">
+          <option value="">All Countries</option>
+          ${countries.map(c => `<option value="${c}" ${c===country?'selected':''}>${c}</option>`).join('')}
+        </select>
+        <select id="filter-category" onchange="applyFilters()" style="width:160px;">
+          <option value="">All Categories</option>
+          ${categories.map(c => `<option value="${c}" ${c===category?'selected':''}>${c}</option>`).join('')}
+        </select>
+        <select id="filter-stage" onchange="applyFilters()" style="width:140px;">
+          <option value="">All Stages</option>
+          ${['new','contacted','responded','hot','negotiation','demo','closed','lost'].map(s => `<option value="${s}" ${s===stage?'selected':''}>${s}</option>`).join('')}
+        </select>
+        <span style="font-size:13px;color:var(--gray-400);margin-left:auto;">${data?.total || 0} leads</span>
+      </div>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden;">
+      ${leads.length === 0 ? '<div class="empty"><div class="empty-icon">🔍</div><div class="empty-text">No leads yet. Start scraping!</div></div>' : `
+      <div style="overflow-x:auto;">
+        <table class="leads-table">
+          <thead><tr>
+            <th>Business</th><th>Category</th><th>Country</th><th>Phone</th>
+            <th>Reviews</th><th>Stage</th><th>Temperature</th><th>Last Contact</th>
+          </tr></thead>
+          <tbody>
+            ${leads.map(l => `
+              <tr onclick="openLead(${l.id})">
+                <td>
+                  <div class="lead-name">${l.name}</div>
+                  <div class="lead-city">${l.city || ''}</div>
+                </td>
+                <td style="font-size:12px;color:var(--gray-600);">${l.category || '-'}</td>
+                <td style="font-size:12px;">${l.country || '-'}</td>
+                <td style="font-size:12px;">${l.phone || '-'}</td>
+                <td>
+                  ${l.google_reviews > 0 ? `<span class="stars">★</span> <span style="font-size:12px;">${l.google_rating || '-'} (${l.google_reviews})</span>` : '-'}
+                </td>
+                <td><span class="stage stage-${l.stage}">${l.stage}</span></td>
+                <td>
+                  <span class="temp-${l.temperature || 'cold'}">
+                    <span class="temp-dot"></span>${l.temperature || 'cold'}
+                  </span>
+                </td>
+                <td style="font-size:12px;color:var(--gray-400);">${l.last_contacted ? new Date(l.last_contacted).toLocaleDateString() : '-'}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`}
+    </div>`;
+}
+
+let searchTimer;
+function debounceSearch() {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(applyFilters, 400);
+}
+function applyFilters() {
+  const country = document.getElementById('filter-country')?.value || '';
+  const category = document.getElementById('filter-category')?.value || '';
+  const stage = document.getElementById('filter-stage')?.value || '';
+  const search = document.getElementById('lead-search')?.value || '';
+  renderLeads(country, category, stage, search);
+}
+
+// ── PIPELINE ───────────────────────────────────────────────────────────────
+async function renderPipeline() {
+  const data = await GET('/api/leads?limit=500');
+  const leads = data?.leads || [];
+
+  const stages = [
+    { key:'new', label:'New Lead', color:'#64748B' },
+    { key:'contacted', label:'Contacted', color:'#2563EB' },
+    { key:'responded', label:'Responded', color:'#D97706' },
+    { key:'hot', label:'🔥 Hot', color:'#DC2626' },
+    { key:'negotiation', label:'💰 Negotiation', color:'#7C3AED' },
+    { key:'demo', label:'Demo Sent', color:'#059669' },
+    { key:'closed', label:'✓ Closed', color:'#16A34A' },
+    { key:'lost', label:'Lost', color:'#94A3B8' }
+  ];
+
+  const grouped = {};
+  for (const s of stages) grouped[s.key] = leads.filter(l => l.stage === s.key);
+
+  document.getElementById('content').innerHTML = `
+    <div class="pipeline">
+      ${stages.map(s => `
+        <div class="pipeline-col">
+          <div class="pipeline-col-title" style="color:${s.color};">
+            ${s.label} <span class="pipeline-count">${grouped[s.key].length}</span>
+          </div>
+          ${grouped[s.key].length === 0
+            ? '<div style="font-size:11px;color:var(--gray-400);text-align:center;padding:12px;">Empty</div>'
+            : grouped[s.key].map(l => `
+                <div class="pipeline-card" onclick="openLead(${l.id})">
+                  <div class="pc-name">${l.name}</div>
+                  <div class="pc-cat">${l.category} · ${l.city}</div>
+                  ${l.last_contacted ? `<div style="font-size:10px;color:var(--gray-400);margin-top:4px;">Last: ${new Date(l.last_contacted).toLocaleDateString()}</div>` : ''}
+                </div>`).join('')}
+        </div>`).join('')}
+    </div>`;
+}
+
+// ── LEAD DETAIL MODAL ──────────────────────────────────────────────────────
+async function openLead(id) {
+  document.getElementById('lead-modal').style.display = 'flex';
+  document.getElementById('modal-content').innerHTML = '<div class="loading"><div class="spinner"></div> Loading lead...</div>';
+
+  const lead = await GET(`/api/leads/${id}`);
+  if (!lead) return;
+
+  const qs = (() => { try { return JSON.parse(lead.qualifying_questions || '[]'); } catch { return []; } })();
+  const socials = [
+    lead.facebook_url ? { name:'Facebook', url: lead.facebook_url, followers: lead.facebook_followers, icon:'📘' } : null,
+    lead.instagram_url ? { name:'Instagram', url: lead.instagram_url, followers: lead.instagram_followers, icon:'📸' } : null,
+    lead.twitter_url ? { name:'Twitter', url: lead.twitter_url, followers: lead.twitter_followers, icon:'🐦' } : null,
+  ].filter(Boolean);
+
+  document.getElementById('modal-content').innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">
+      <div>
+        <h2 style="font-size:20px;font-weight:800;color:var(--navy);">${lead.name}</h2>
+        <div style="font-size:13px;color:var(--gray-400);margin-top:4px;">${lead.category || ''} · ${lead.city || ''}, ${lead.country || ''}</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <span class="stage stage-${lead.stage}">${lead.stage}</span>
+        <select onchange="updateLeadStage(${id}, this.value)" style="font-size:12px;padding:4px 8px;width:auto;border-radius:6px;">
+          ${['new','contacted','responded','hot','negotiation','demo','closed','lost'].map(s =>
+            `<option value="${s}" ${s===lead.stage?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+
+    <div class="info-grid" style="margin-bottom:16px;">
+      <div class="info-item"><div class="info-label">Phone</div><div class="info-val">${lead.phone || '—'}</div></div>
+      <div class="info-item"><div class="info-label">Email</div><div class="info-val">${lead.email || '—'}</div></div>
+      <div class="info-item"><div class="info-label">Owner</div><div class="info-val">${lead.owner_name || '—'}</div></div>
+      <div class="info-item"><div class="info-label">Operating</div><div class="info-val">${lead.years_operating || '—'}</div></div>
+      <div class="info-item"><div class="info-label">Google Reviews</div><div class="info-val">⭐ ${lead.google_rating || '—'} (${lead.google_reviews || 0})</div></div>
+      <div class="info-item"><div class="info-label">Price Range</div><div class="info-val">${lead.price_range || '—'}</div></div>
+    </div>
+
+    ${socials.length ? `
+      <div class="modal-section">
+        <div class="modal-section-title">Social Media</div>
+        <div class="social-chips">
+          ${socials.map(s => `<a href="${s.url}" target="_blank" class="social-chip">${s.icon} ${s.name} ${s.followers ? `· ${s.followers.toLocaleString()}` : ''}</a>`).join('')}
+        </div>
+      </div>` : ''}
+
+    ${qs.length ? `
+      <div class="modal-section">
+        <div class="modal-section-title">Qualifying Questions</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          ${qs.map((q,i) => `<div style="font-size:13px;color:var(--gray-700);padding:8px 12px;background:var(--gray-50);border-radius:6px;border-left:3px solid var(--blue);">${i+1}. ${q}</div>`).join('')}
+        </div>
+      </div>` : ''}
+
+    ${lead.messages?.length ? `
+      <div class="modal-section">
+        <div class="modal-section-title">Message History</div>
+        <div style="max-height:200px;overflow-y:auto;padding:8px;background:var(--gray-50);border-radius:8px;">
+          ${lead.messages.map(m => `
+            <div class="message-bubble ${m.direction}">
+              ${m.content}
+              <div class="message-meta">${m.channel} · ${new Date(m.sent_at).toLocaleString()}</div>
+            </div>`).join('')}
+        </div>
+      </div>` : ''}
+
+    ${lead.ai_analysis ? `
+      <div class="ai-box">
+        <div class="ai-box-label">🤖 AI Analysis</div>
+        <div class="ai-box-text">${lead.ai_analysis}</div>
+      </div>` : ''}
+
+    <hr class="divider">
+    <div style="margin-bottom:12px;">
+      <div class="modal-section-title">Send Message</div>
+      <div style="display:flex;gap:8px;margin-bottom:8px;">
+        <select id="msg-channel" style="width:130px;font-size:12px;">
+          <option value="email">Email</option>
+          <option value="whatsapp">WhatsApp</option>
+          <option value="sms">SMS</option>
+        </select>
+        <button class="btn btn-secondary btn-sm" onclick="getSuggestion(${id})">🤖 AI Draft</button>
+        <button class="btn btn-secondary btn-sm" onclick="analyzeLeadAI(${id})">📊 Analyze</button>
+        <button class="btn btn-secondary btn-sm" onclick="getWarmupQ(${id})">❓ Questions</button>
+      </div>
+      <textarea id="msg-content" placeholder="Type your message..." style="margin-bottom:8px;"></textarea>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-primary btn-sm" onclick="sendMessage(${id})">Send</button>
+        <button class="btn btn-success btn-sm" onclick="logCall(${id})">📞 Log Call</button>
+        <button class="btn btn-navy btn-sm" onclick="generateVideoPrompt(${id})">🎥 Video Prompt</button>
+      </div>
+    </div>
+
+    ${lead.calls?.length ? `
+      <div class="modal-section">
+        <div class="modal-section-title">Call Log</div>
+        ${lead.calls.map(c => `
+          <div style="padding:10px;background:var(--gray-50);border-radius:6px;margin-bottom:6px;font-size:12px;">
+            <div style="font-weight:700;">${c.caller} · ${new Date(c.called_at).toLocaleDateString()} · ${c.outcome || 'logged'}</div>
+            ${c.price_discussed ? `<div>Price discussed: €${c.price_discussed}</div>` : ''}
+            ${c.summary ? `<div style="color:var(--gray-600);margin-top:4px;">${c.summary}</div>` : ''}
+          </div>`).join('')}
+      </div>` : ''}
+  `;
+}
+
+function closeModal() {
+  document.getElementById('lead-modal').style.display = 'none';
+}
+
+async function updateLeadStage(id, stage) {
+  await PATCH(`/api/leads/${id}`, { stage });
+  if (state.currentTab === 'pipeline') renderPipeline();
+  if (state.currentTab === 'leads') applyFilters();
+}
+
+async function sendMessage(id) {
+  const channel = document.getElementById('msg-channel').value;
+  const content = document.getElementById('msg-content').value.trim();
+  if (!content) return;
+  await POST(`/api/leads/${id}/message`, { channel, content });
+  document.getElementById('msg-content').value = '';
+  alert('Message logged!');
+}
+
+async function getSuggestion(id) {
+  const channel = document.getElementById('msg-channel').value;
+  const btn = event.target;
+  btn.textContent = '...';
+  const result = await POST('/api/ai/suggest-reply', { leadId: id, channel });
+  if (result?.suggestion) document.getElementById('msg-content').value = result.suggestion;
+  btn.textContent = '🤖 AI Draft';
+}
+
+async function analyzeLeadAI(id) {
+  const btn = event.target;
+  btn.textContent = '...';
+  const result = await POST('/api/ai/analyze-lead', { leadId: id });
+  btn.textContent = '📊 Analyze';
+  if (result?.analysis) {
+    const existing = document.querySelector('.ai-box');
+    if (existing) { existing.querySelector('.ai-box-text').textContent = result.analysis; }
+    else {
+      const div = document.createElement('div');
+      div.className = 'ai-box';
+      div.innerHTML = `<div class="ai-box-label">🤖 AI Analysis</div><div class="ai-box-text">${result.analysis}</div>`;
+      document.getElementById('modal-content').appendChild(div);
+    }
+  }
+}
+
+async function getWarmupQ(id) {
+  const result = await POST('/api/ai/warmup-questions', { leadId: id });
+  if (result?.questions) {
+    alert('Questions updated:\n\n' + result.questions.join('\n'));
+  }
+}
+
+async function logCall(id) {
+  const caller = prompt('Caller name:', 'Bamba');
+  if (!caller) return;
+  const outcome = prompt('Outcome (called/interested/quoted/closed/not-interested):', 'called');
+  const price = prompt('Price discussed (leave blank if none):', '');
+  const summary = prompt('Quick summary:', '');
+  await POST('/api/calls', {
+    lead_id: id, caller, outcome,
+    price_discussed: price ? parseFloat(price) : null,
+    summary
+  });
+  alert('Call logged!');
+  openLead(id);
+}
+
+async function generateVideoPrompt(id) {
+  const result = await POST('/api/video/generate-prompt', { leadId: id });
+  if (result) {
+    document.getElementById('modal-content').innerHTML += `
+      <div class="ai-box" style="margin-top:12px;">
+        <div class="ai-box-label">🎥 Video Prompt — <a href="${result.openclaw_url}" target="_blank" style="color:var(--blue);">Open openclaw →</a></div>
+        <div class="ai-box-text"><strong>Primary:</strong><br>${result.primary}<br><br><strong>Secondary:</strong><br>${result.secondary}</div>
+      </div>`;
+  }
+}
+
+// ── CALLS TAB ──────────────────────────────────────────────────────────────
+async function renderCalls() {
+  const calls = await GET('/api/calls');
+  const wisdoms = [
+    'Mention VALUE before you mention PRICE. Always.',
+    'Get 3 yeses in the first 60 seconds. Ask easy questions first.',
+    'Use humor. One small joke relaxes the call in the first 30 seconds.',
+    'When they go quiet — let them. Silence is not your enemy.',
+    'Always end with a clear next step. Never leave a call open-ended.',
+    'Use their name in the first sentence.',
+    'Explain what they are leaving on the table — lost customers.',
+    'Make it risk-free: they only pay if they love it.'
+  ];
+  const wisdom = wisdoms[Math.floor(Math.random() * wisdoms.length)];
+
+  document.getElementById('content').innerHTML = `
+    <div class="call-wisdom">
+      <div class="wisdom-label">💡 Pre-Call Wisdom</div>
+      <div class="wisdom-text">"${wisdom}"</div>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:20px;">
+      <div class="card">
+        <div class="section-title" style="margin-bottom:14px;">Log a Call</div>
+        <div class="form-group">
+          <label class="form-label">Caller</label>
+          <select id="call-caller"><option>Bamba</option><option>Lewis</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Lead Name (search)</label>
+          <input type="text" id="call-lead-search" placeholder="Type business name...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Outcome</label>
+          <select id="call-outcome">
+            <option value="called">Called — No answer</option>
+            <option value="interested">Interested — Follow up needed</option>
+            <option value="quoted">Quoted a price</option>
+            <option value="closed">CLOSED — Deal done!</option>
+            <option value="not-interested">Not interested</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Price Discussed (€)</label>
+          <input type="number" id="call-price" placeholder="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Summary</label>
+          <textarea id="call-summary" placeholder="Brief notes on the call..."></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="submitCallLog()">Log Call</button>
+      </div>
+      <div class="card">
+        <div class="section-title" style="margin-bottom:14px;">Recent Calls</div>
+        ${!calls?.length ? '<div class="empty" style="padding:20px;"><div class="empty-text">No calls logged yet.</div></div>' :
+          calls.slice(0,8).map(c => `
+            <div class="call-card">
+              <div class="call-header">
+                <div class="call-name">${c.lead_name || 'Unknown'}</div>
+                <div class="call-date">${new Date(c.called_at).toLocaleDateString()}</div>
+              </div>
+              <div style="font-size:12px;color:var(--gray-600);">${c.caller} · ${c.outcome} ${c.price_discussed ? `· €${c.price_discussed}` : ''}</div>
+              ${c.summary ? `<div style="font-size:12px;color:var(--gray-400);margin-top:6px;">${c.summary}</div>` : ''}
+            </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+async function submitCallLog() {
+  const outcome = document.getElementById('call-outcome').value;
+  const price = document.getElementById('call-price').value;
+  const summary = document.getElementById('call-summary').value;
+  const caller = document.getElementById('call-caller').value;
+  await POST('/api/calls', { caller, outcome, price_discussed: price || null, summary });
+  alert('Call logged!');
+  renderCalls();
+}
+
+// ── SCRIPTS ────────────────────────────────────────────────────────────────
+async function renderScripts() {
+  const scripts = await GET('/api/scripts');
+  if (!scripts) return;
+
+  document.getElementById('content').innerHTML = `
+    <div class="tab-row">
+      <button class="tab-btn active" onclick="showScript(this,'call-script')">📞 Call Script</button>
+      <button class="tab-btn" onclick="showScript(this,'wa-script')">💬 WhatsApp</button>
+      <button class="tab-btn" onclick="showScript(this,'email-script')">✉️ Email</button>
+    </div>
+
+    <div id="call-script">
+      <div class="card" style="margin-bottom:16px;">
+        <div class="section-title" style="margin-bottom:14px;">Pre-Call Wisdom</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          ${scripts.call.wisdom.map(w => `
+            <div style="padding:10px 14px;background:linear-gradient(90deg,var(--blue-pale),white);border-left:3px solid var(--blue);border-radius:0 6px 6px 0;font-size:13px;color:var(--gray-800);">${w}</div>`).join('')}
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-title" style="margin-bottom:14px;">Full Call Script</div>
+        <pre style="white-space:pre-wrap;font-family:var(--font);font-size:13px;line-height:1.8;color:var(--gray-800);">${scripts.call.script}</pre>
+      </div>
+    </div>
+
+    <div id="wa-script" style="display:none;">
+      <div class="card">
+        <div class="section-title" style="margin-bottom:14px;">WhatsApp Sequence</div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          ${scripts.whatsapp.messages.map((m,i) => `
+            <div style="background:var(--gray-50);border-radius:8px;padding:14px;">
+              <div style="font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;margin-bottom:8px;">Message ${i+1}</div>
+              <div style="font-size:13px;line-height:1.6;color:var(--gray-800);">${m}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div id="email-script" style="display:none;">
+      <div class="card" style="margin-bottom:14px;">
+        <div class="section-title" style="margin-bottom:12px;">Subject Lines</div>
+        ${scripts.email.subjects.map(s => `
+          <div style="padding:10px 14px;background:var(--gray-50);border-radius:6px;font-size:13px;margin-bottom:6px;font-weight:600;color:var(--navy);">${s}</div>`).join('')}
+      </div>
+      <div class="card">
+        <div class="section-title" style="margin-bottom:12px;">Email Template</div>
+        <pre style="white-space:pre-wrap;font-family:var(--font);font-size:13px;line-height:1.8;color:var(--gray-800);">${scripts.email.body}</pre>
+      </div>
+    </div>`;
+}
+
+function showScript(btn, id) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  ['call-script','wa-script','email-script'].forEach(s => {
+    const el = document.getElementById(s);
+    if (el) el.style.display = s === id ? 'block' : 'none';
+  });
+}
+
+// ── AI CHAT ────────────────────────────────────────────────────────────────
+function renderAIChat() {
+  document.getElementById('content').innerHTML = `
+    <div class="card" style="height:calc(100vh - 120px);display:flex;flex-direction:column;padding:16px;">
+      <div class="chat-presets">
+        <button class="preset-btn" onclick="chatPreset('Check on my hottest leads right now')">🔥 Hot Leads</button>
+        <button class="preset-btn" onclick="chatPreset('Which leads should I follow up with today?')">📋 Follow Ups</button>
+        <button class="preset-btn" onclick="chatPreset('Which leads have not been checked in over a week?')">⏰ Unchecked</button>
+        <button class="preset-btn" onclick="chatPreset('What should my top priority be right now to make money today?')">💰 Priority</button>
+        <button class="preset-btn" onclick="chatPreset('Give me a cold email for a restaurant with no website')">✉️ Draft Email</button>
+        <button class="preset-btn" onclick="chatPreset('How do I handle a price objection on a sales call?')">💬 Objections</button>
+      </div>
+      <div class="chat-messages" id="chat-msgs">
+        <div class="chat-bubble ai">Hey! I'm your Webigo AI. Ask me anything — leads, scripts, strategy, copy. What do you need?</div>
+      </div>
+      <div class="chat-input-row">
+        <input type="text" id="chat-input" placeholder="Ask anything..." onkeydown="if(event.key==='Enter')sendChat()">
+        <button class="btn btn-primary" onclick="sendChat()">Send</button>
+      </div>
+    </div>`;
+}
+
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+
+  const msgs = document.getElementById('chat-msgs');
+  msgs.innerHTML += `<div class="chat-bubble user">${msg}</div>`;
+  msgs.innerHTML += `<div class="chat-bubble ai" id="ai-typing"><div class="spinner"></div></div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+
+  state.chatHistory.push({ role: 'user', content: msg });
+  const result = await POST('/api/ai/chat', { message: msg });
+
+  document.getElementById('ai-typing')?.remove();
+  const reply = result?.reply || 'No response.';
+  msgs.innerHTML += `<div class="chat-bubble ai">${reply.replace(/\n/g,'<br>')}</div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function chatPreset(text) {
+  document.getElementById('chat-input').value = text;
+  sendChat();
+}
+
+// ── TO-DO ──────────────────────────────────────────────────────────────────
+async function renderTodos() {
+  const todos = await GET('/api/todos');
+
+  const urgent = (todos || []).filter(t => t.priority === 'urgent');
+  const high = (todos || []).filter(t => t.priority === 'high');
+  const medium = (todos || []).filter(t => ['medium','low'].includes(t.priority));
+
+  function renderTodoGroup(items) {
+    return items.map(t => `
+      <div class="todo-item">
+        <div class="todo-check ${t.completed ? 'done' : ''}" onclick="toggleTodo(${t.id}, ${!t.completed})">
+          ${t.completed ? '✓' : ''}
+        </div>
+        <div class="todo-content">
+          <div class="todo-title ${t.completed ? 'done' : ''}">${t.title}</div>
+          ${t.description ? `<div class="todo-desc">${t.description}</div>` : ''}
+          <div class="todo-meta">
+            <span class="priority-${t.priority}">${t.priority.toUpperCase()}</span>
+            ${t.lead_name ? `<span style="font-size:11px;color:var(--gray-400);">· ${t.lead_name}</span>` : ''}
+            <span style="font-size:11px;color:var(--gray-400);">${t.type}</span>
+          </div>
+        </div>
+      </div>`).join('');
+  }
+
+  document.getElementById('content').innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <div class="section-title">Today's To-Do</div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-secondary btn-sm" onclick="generateAITodos()">🤖 AI Generate</button>
+        <button class="btn btn-primary btn-sm" onclick="showAddTodo()">+ Add Task</button>
+      </div>
+    </div>
+
+    <div id="add-todo-form" style="display:none;" class="card" style="margin-bottom:16px;">
+      <div class="form-group"><label class="form-label">Task Title</label><input type="text" id="new-todo-title" placeholder="Task title..."></div>
+      <div class="form-group"><label class="form-label">Description</label><input type="text" id="new-todo-desc" placeholder="Optional details..."></div>
+      <div class="grid-2">
+        <div class="form-group"><label class="form-label">Priority</label>
+          <select id="new-todo-priority"><option value="urgent">Urgent</option><option value="high">High</option><option value="medium" selected>Medium</option><option value="low">Low</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">Type</label>
+          <select id="new-todo-type"><option value="sales">Sales</option><option value="fulfillment">Fulfillment</option><option value="followup">Follow Up</option><option value="general">General</option></select>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-primary btn-sm" onclick="addTodo()">Add</button>
+        <button class="btn btn-secondary btn-sm" onclick="document.getElementById('add-todo-form').style.display='none'">Cancel</button>
+      </div>
+    </div>
+
+    ${urgent.length ? `
+      <div class="card" style="margin-bottom:16px;border-color:var(--red);">
+        <div style="color:var(--red);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">🔴 Urgent</div>
+        ${renderTodoGroup(urgent)}
+      </div>` : ''}
+
+    ${high.length ? `
+      <div class="card" style="margin-bottom:16px;border-color:var(--orange);">
+        <div style="color:var(--orange);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">🟡 High Priority</div>
+        ${renderTodoGroup(high)}
+      </div>` : ''}
+
+    ${medium.length ? `
+      <div class="card" style="margin-bottom:16px;">
+        <div style="color:var(--blue);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">🔵 Medium / Low</div>
+        ${renderTodoGroup(medium)}
+      </div>` : ''}
+
+    ${!todos?.length ? '<div class="empty"><div class="empty-icon">✅</div><div class="empty-text">No tasks. Click "AI Generate" to create today\'s to-do list.</div></div>' : ''}
+  `;
+}
+
+function showAddTodo() {
+  const el = document.getElementById('add-todo-form');
+  if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+async function addTodo() {
+  const title = document.getElementById('new-todo-title').value.trim();
+  if (!title) return;
+  await POST('/api/todos', {
+    title,
+    description: document.getElementById('new-todo-desc').value,
+    priority: document.getElementById('new-todo-priority').value,
+    type: document.getElementById('new-todo-type').value
+  });
+  renderTodos();
+}
+
+async function toggleTodo(id, done) {
+  await PATCH(`/api/todos/${id}`, { completed: done });
+  renderTodos();
+}
+
+async function generateAITodos() {
+  const btn = event.target;
+  btn.textContent = 'Generating...';
+  await POST('/api/ai/generate-todos', {});
+  btn.textContent = '🤖 AI Generate';
+  renderTodos();
+}
+
+// ── VIDEO ──────────────────────────────────────────────────────────────────
+function renderVideo() {
+  document.getElementById('content').innerHTML = `
+    <div class="card" style="margin-bottom:16px;">
+      <div class="section-title" style="margin-bottom:4px;">Demo Video Generator</div>
+      <div style="font-size:13px;color:var(--gray-400);margin-bottom:16px;">Generate video prompts for openclaw.unloopa.com when a lead responds positively.</div>
+      <div class="form-group">
+        <label class="form-label">Lead ID (from All Leads tab)</label>
+        <input type="number" id="video-lead-id" placeholder="Enter lead ID...">
+      </div>
+      <button class="btn btn-primary" onclick="genVideoFromId()">🎥 Generate Prompt</button>
+    </div>
+
+    <div id="video-result" style="display:none;" class="card">
+      <div class="section-title" style="margin-bottom:14px;">Generated Prompt</div>
+      <div style="margin-bottom:12px;">
+        <a id="openclaw-link" href="https://openclaw.unloopa.com/free-prompt" target="_blank" class="btn btn-navy">Open openclaw →</a>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Primary Prompt (paste into openclaw)</label>
+        <textarea id="video-primary" style="height:120px;font-family:monospace;font-size:12px;" readonly></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Secondary / Style Prompt</label>
+        <textarea id="video-secondary" style="height:100px;font-family:monospace;font-size:12px;" readonly></textarea>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <div class="section-title" style="margin-bottom:14px;">Step-by-Step Video Guide</div>
+      ${[
+        ['1', 'Lead responds positively', 'Their stage updates to "Responded" — the video flow is ready.'],
+        ['2', 'Click "Video Prompt" in the lead detail', 'Opens the prompt generator for that specific business.'],
+        ['3', 'Copy the primary prompt', 'This has all the business info pre-filled in the correct language.'],
+        ['4', 'Go to openclaw.unloopa.com', 'Paste the primary prompt. Select style and cover image.'],
+        ['5', 'Use secondary prompt for style', 'Paste secondary prompt in the style/context box.'],
+        ['6', 'Generate the video', 'Takes 1-3 minutes. Download when complete.'],
+        ['7', 'Copy the video link', 'Save it to the lead profile and send via WhatsApp or email.'],
+      ].map(([num, title, desc]) => `
+        <div style="display:flex;gap:12px;margin-bottom:12px;align-items:flex-start;">
+          <div style="background:var(--blue);color:white;font-weight:800;font-size:13px;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${num}</div>
+          <div>
+            <div style="font-weight:700;font-size:13px;color:var(--navy);">${title}</div>
+            <div style="font-size:12px;color:var(--gray-400);margin-top:2px;">${desc}</div>
+          </div>
+        </div>`).join('')}
+    </div>`;
+}
+
+async function genVideoFromId() {
+  const id = document.getElementById('video-lead-id').value;
+  if (!id) return;
+  const result = await POST('/api/video/generate-prompt', { leadId: parseInt(id) });
+  if (result) {
+    document.getElementById('video-result').style.display = 'block';
+    document.getElementById('video-primary').value = result.primary;
+    document.getElementById('video-secondary').value = result.secondary;
+  }
+}
+
+// ── TOOLS ──────────────────────────────────────────────────────────────────
+function renderTools() {
+  const tools = [
+    { icon: '🤖', name: 'Anthropic Claude', desc: 'AI engine powering lead analysis, chat, response suggestions, and to-do generation.', url: 'https://console.anthropic.com', link: 'console.anthropic.com' },
+    { icon: '🗺️', name: 'Google Maps API', desc: 'Scrapes local businesses without websites. Powers the entire lead generation engine.', url: 'https://console.cloud.google.com/apis/library/places-backend.googleapis.com', link: 'Google Cloud Console' },
+    { icon: '📱', name: 'Twilio', desc: 'Sends SMS and WhatsApp messages. Your account exists — add credentials to Railway.', url: 'https://console.twilio.com', link: 'console.twilio.com' },
+    { icon: '✉️', name: 'SendGrid', desc: 'Email sending for cold outreach. Free tier = 100 emails/day.', url: 'https://app.sendgrid.com', link: 'app.sendgrid.com' },
+    { icon: '🚂', name: 'Railway', desc: 'Server hosting. Auto-deploys from GitHub on every push. Hosts your database too.', url: 'https://railway.app', link: 'railway.app' },
+    { icon: '🐱', name: 'GitHub', desc: 'All your code lives here. Push changes → Railway auto-deploys in ~2 minutes.', url: 'https://github.com', link: 'github.com' },
+    { icon: '🎥', name: 'openclaw', desc: 'Demo video generation tool. Use the AI-generated prompts from the Video tab.', url: 'https://openclaw.unloopa.com/free-prompt', link: 'openclaw.unloopa.com' },
+    { icon: '🌐', name: 'Namecheap', desc: 'Buy domains for closed clients. ~$10-15/yr per domain.', url: 'https://namecheap.com', link: 'namecheap.com' },
+    { icon: '⚡', name: 'Vercel', desc: 'Deploy client websites for free. Connect domain, instant HTTPS.', url: 'https://vercel.com', link: 'vercel.com' },
+    { icon: '🏗️', name: 'Carrd', desc: 'Fast one-page website builder. Great for simple business sites. $19/yr pro.', url: 'https://carrd.co', link: 'carrd.co' },
+    { icon: '📊', name: 'Google Sheets', desc: 'Lead export backup. All leads can be exported as CSV and imported to Sheets.', url: 'https://sheets.google.com', link: 'sheets.google.com' },
+    { icon: '🔗', name: 'buildmyagent.io', desc: 'No-code AI agent builder connected to 800+ apps. Use to wire automations without touching server code. Good for connecting outreach channels visually.', url: 'https://buildmyagent.io', link: 'buildmyagent.io' },
+  ];
+
+  document.getElementById('content').innerHTML = `
+    <div class="grid-3">
+      ${tools.map(t => `
+        <div class="tool-card">
+          <div class="tool-icon">${t.icon}</div>
+          <div>
+            <div class="tool-name">${t.name}</div>
+            <div class="tool-desc">${t.desc}</div>
+            <a href="${t.url}" target="_blank" class="tool-link">→ ${t.link}</a>
+          </div>
+        </div>`).join('')}
+    </div>`;
+}
+
+// ── HELPERS ────────────────────────────────────────────────────────────────
+function navigate(tab) {
+  const item = document.querySelector(`[data-tab="${tab}"]`);
+  if (item) item.click();
+}
+
+// ── CLOCK ──────────────────────────────────────────────────────────────────
+function startClock() {
+  function tick() {
+    const now = new Date();
+    const t = now.toLocaleTimeString('en-US', { timeZone:'Europe/Stockholm', hour:'2-digit', minute:'2-digit', hour12:false });
+    document.getElementById('topbar-clock').textContent = t;
+  }
+  tick();
+  setInterval(tick, 10000);
+}
+
+// ── INIT ───────────────────────────────────────────────────────────────────
+(async function init() {
+  startSSE();
+  startClock();
+  renderTab('dashboard');
+})();
+</script>
+</body>
+</html>
