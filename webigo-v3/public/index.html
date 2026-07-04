@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Webigo</title>
+<style>
+:root{--navy:#0F2A47;--blue:#2563EB;--bl:#3B82F6;--bd:#DBEAFE;--bp:#EFF6FF;--g50:#F8FAFC;--g100:#F1F5F9;--g200:#E2E8F0;--g300:#CBD5E1;--g400:#94A3B8;--g600:#475569;--g800:#1E293B;--gr:#16A34A;--gp:#F0FDF4;--gd:#DCFCE7;--rd:#DC2626;--rp:#FEF2F2;--or:#D97706;--op:#FFFBEB;--pu:#7C3AED;--pp:#F5F3FF;--wa:#25D366;--f:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;--sh:0 1px 3px rgba(0,0,0,.07),0 4px 16px rgba(0,0,0,.05);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--f);background:var(--g50);color:var(--g800);display:flex;height:100vh;overflow:hidden;}
+/* SIDEBAR */
+#sb{width:200px;min-width:200px;background:var(--navy);display:flex;flex-direction:column;height:100vh;transition:width .2s;}
+.logo{padding:16px 16px 12px;border-bottom:1px solid rgba(255,255,255,.08);font-size:19px;font-weight:800;color:#fff;letter-spacing:2px;}
+.logo span{color:var(--bl);}
+#snav{flex:1;padding:6px 0;overflow-y:auto;}
+.ni{display:flex;align-items:center;gap:9px;padding:9px 14px;color:rgba(255,255,255,.55);cursor:pointer;font-size:13px;font-weight:500;transition:all .12s;border-left:3px solid transparent;}
+.ni:hover{color:rgba(255,255,255,.85);background:rgba(255,255,255,.05);}
+.ni.active{color:#fff;background:rgba(37,99,235,.25);border-left-color:var(--bl);}
+.ni .ic{font-size:14px;width:18px;text-align:center;flex-shrink:0;}
+.ns{padding:10px 14px 2px;font-size:10px;font-weight:700;color:rgba(255,255,255,.25);text-transform:uppercase;letter-spacing:1px;}
+.sb-bot{padding:10px 14px;border-top:1px solid rgba(255,255,255,.08);font-size:11px;color:rgba(255,255,255,.25);}
+/* MAIN */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+#topbar{background:#fff;border-bottom:1px solid var(--g200);padding:0 18px;height:50px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.pt{font-size:15px;font-weight:700;color:var(--navy);}
+#con{flex:1;overflow-y:auto;padding:16px;}
+/* CARDS */
+.card{background:#fff;border-radius:10px;border:1px solid var(--g200);padding:16px;box-shadow:var(--sh);}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+/* STAT CARDS */
+.sc{background:#fff;border-radius:10px;border:1px solid var(--g200);padding:14px 16px;box-shadow:var(--sh);}
+.sv{font-size:28px;font-weight:800;color:var(--navy);line-height:1;}
+.sl{font-size:11px;color:var(--g400);margin-top:2px;font-weight:500;}
+.ss{font-size:11px;color:var(--gr);margin-top:3px;}
+.sc.rev .sv{color:var(--gr);}
+.sc.blu .sv{color:var(--blue);}
+/* BADGES */
+.badge{background:var(--blue);color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:12px;}
+.br{background:var(--rd);color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:12px;}
+/* STAGE PILLS */
+.stg{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;}
+.sn{background:var(--g100);color:var(--g600);}
+.sc2{background:var(--bd);color:var(--blue);}
+.sr{background:var(--op);color:var(--or);}
+.sh2{background:var(--rp);color:var(--rd);}
+.sng{background:var(--pp);color:var(--pu);}
+.sd{background:#ECFDF5;color:#059669;}
+.scl{background:var(--gd);color:var(--gr);}
+.sls{background:var(--g100);color:var(--g400);}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .12s;font-family:var(--f);}
+.bp{background:var(--blue);color:#fff;}.bp:hover{background:#1D4ED8;}
+.bs{background:var(--g100);color:var(--g800);border:1px solid var(--g200);}.bs:hover{background:var(--g200);}
+.bg{background:var(--gr);color:#fff;}.bg:hover{background:#15803D;}
+.bn{background:var(--navy);color:#fff;}
+.brd{background:var(--rd);color:#fff;}.brd:hover{background:#B91C1C;}
+.bwa{background:var(--wa);color:#fff;}.bwa:hover{background:#1da851;}
+.bsm{padding:5px 10px;font-size:12px;}
+.bxs{padding:3px 8px;font-size:11px;border-radius:6px;}
+/* INPUTS */
+input,select,textarea{width:100%;padding:8px 11px;border:1px solid var(--g200);border-radius:8px;font-size:13px;font-family:var(--f);color:var(--g800);background:#fff;transition:border .12s;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var(--bp);}
+textarea{resize:vertical;min-height:65px;}
+.fg{margin-bottom:10px;}
+.fl{font-size:11px;font-weight:600;color:var(--g600);display:block;margin-bottom:4px;}
+/* TABLE */
+.lt{width:100%;border-collapse:collapse;font-size:13px;}
+.lt th{background:var(--g50);color:var(--g600);font-weight:600;padding:9px 11px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid var(--g200);position:sticky;top:0;z-index:1;}
+.lt td{padding:9px 11px;border-bottom:1px solid var(--g100);vertical-align:middle;}
+.lt tr:hover td{background:var(--bp);cursor:pointer;}
+.ln{font-weight:700;color:var(--navy);}
+.lc{color:var(--g400);font-size:11px;}
+.lpic{width:38px;height:38px;border-radius:7px;background:var(--g100);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;overflow:hidden;}
+.lpic img{width:100%;height:100%;object-fit:cover;}
+/* CALL STATUS PILL */
+.cpill{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700;}
+.cpn{background:var(--g100);color:var(--g400);}
+.cpc{background:var(--bd);color:var(--blue);}
+.cpna{background:var(--op);color:var(--or);}
+.cpi{background:var(--gd);color:var(--gr);}
+/* PIPELINE */
+.pipeline{display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;}
+.pc{min-width:148px;background:var(--g100);border-radius:9px;padding:10px;}
+.pct{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;padding-bottom:7px;border-bottom:2px solid var(--g200);}
+.pcn{float:right;background:var(--navy);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;}
+.pcard{background:#fff;border-radius:7px;padding:8px;margin-bottom:5px;border:1px solid var(--g200);cursor:pointer;font-size:12px;transition:border .12s;}
+.pcard:hover{border-color:var(--blue);}
+/* SCRAPER */
+.ccard-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;}
+.ccard{background:var(--g50);border:2px solid var(--g200);border-radius:9px;padding:10px 8px;cursor:pointer;text-align:center;transition:all .15s;position:relative;}
+.ccard:hover{background:var(--bp);border-color:var(--bl);}
+.ccard.sel{background:var(--bp);border-color:var(--blue);box-shadow:0 0 0 2px rgba(37,99,235,.15);}
+.ccard .cflag{font-size:22px;display:block;margin-bottom:3px;}
+.ccard .cname{font-size:11px;font-weight:700;color:var(--g800);}
+.ccard .cpeak{position:absolute;top:-7px;right:-7px;background:#F59E0B;color:#fff;font-size:9px;font-weight:800;padding:1px 5px;border-radius:10px;}
+.cat-grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+.chip{padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:2px solid var(--g200);background:var(--g50);color:var(--g600);transition:all .12s;}
+.chip:hover{border-color:var(--bl);color:var(--blue);}
+.chip.sel{background:var(--bp);border-color:var(--blue);color:var(--blue);}
+.slog{background:#0F1B2D;border-radius:8px;padding:10px;font-family:monospace;font-size:12px;color:#94A3B8;height:220px;overflow-y:auto;}
+.lf{color:#4ADE80;}.lsk{color:#F87171;}.lsr{color:#60A5FA;}.ldt{color:#FCD34D;}
+.pbw{background:var(--g200);border-radius:6px;height:8px;overflow:hidden;margin:8px 0;}
+.pbf{height:100%;background:linear-gradient(90deg,var(--blue),var(--bl));border-radius:6px;transition:width .4s;}
+/* MARKETS */
+.mkt{background:#fff;border-radius:10px;border:1px solid var(--g200);padding:14px;box-shadow:var(--sh);}
+.mkt.open{border-color:#86EFAC;background:var(--gp);}
+.mkt.peak{border-color:#FCD34D;background:#FEFCE8;}
+.ms{font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;}
+.mo{background:var(--gr);color:#fff;}.mp{background:#D97706;color:#fff;}.mc{background:var(--g300);color:var(--g600);}.mw{background:var(--op);color:var(--or);}
+.bb{font-size:11px;color:var(--g600);margin-top:6px;background:rgba(0,0,0,.04);padding:5px 8px;border-radius:6px;line-height:1.5;}
+/* MODAL */
+.mov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:flex;align-items:flex-start;justify-content:center;padding:20px 14px;overflow-y:auto;}
+.modal{background:#fff;border-radius:12px;width:100%;max-width:740px;padding:22px;position:relative;}
+.mcl{position:absolute;top:14px;right:14px;background:var(--g100);border:none;border-radius:7px;padding:4px 10px;cursor:pointer;font-size:16px;color:var(--g600);}
+.mcl:hover{background:var(--g200);}
+.mnav{position:absolute;top:14px;right:65px;display:flex;gap:4px;}
+.mnav button{background:var(--g100);border:none;border-radius:7px;padding:4px 11px;cursor:pointer;font-size:14px;color:var(--g600);font-family:var(--f);}
+.mnav button:hover{background:var(--g200);}
+.msec{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--g400);margin:14px 0 5px;}
+.ig{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.il{font-size:11px;color:var(--g400);font-weight:600;}
+.iv{font-size:13px;font-weight:600;color:var(--g800);margin-top:2px;}
+.aib{background:linear-gradient(135deg,var(--bp),var(--bd));border:1px solid #BFDBFE;border-radius:9px;padding:12px;}
+.aibl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--blue);margin-bottom:4px;}
+.aibt{font-size:13px;color:var(--g800);line-height:1.65;white-space:pre-wrap;}
+.sch{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;background:var(--bp);color:var(--blue);border-radius:20px;font-size:12px;font-weight:600;text-decoration:none;margin:2px;}
+.sch:hover{background:var(--blue);color:#fff;}
+.dial-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0;}
+.dc{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:25px;font-size:14px;font-weight:700;text-decoration:none;color:#fff;background:var(--gr);border:none;cursor:pointer;font-family:var(--f);}
+.dw{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:25px;font-size:14px;font-weight:700;text-decoration:none;color:#fff;background:var(--wa);border:none;cursor:pointer;font-family:var(--f);}
+.sp-wrap{display:flex;gap:4px;flex-wrap:wrap;margin:5px 0;}
+.sp{padding:4px 10px;border-radius:16px;font-size:11px;font-weight:700;cursor:pointer;border:2px solid transparent;font-family:var(--f);transition:all .12s;}
+.sp.active{border-color:var(--navy)!important;box-shadow:0 0 0 2px rgba(15,42,71,.2);}
+.cs-row{display:flex;gap:5px;flex-wrap:wrap;margin:7px 0;}
+.cs{padding:5px 12px;border-radius:18px;font-size:12px;font-weight:700;cursor:pointer;border:2px solid;font-family:var(--f);transition:all .12s;}
+.csa{background:var(--bp);color:var(--blue);border-color:var(--blue);}
+.csa:hover,.csa.on{background:var(--blue);color:#fff;}
+.csb{background:var(--op);color:var(--or);border-color:var(--or);}
+.csb:hover,.csb.on{background:var(--or);color:#fff;}
+.csc{background:var(--gp);color:var(--gr);border-color:var(--gr);}
+.csc:hover,.csc.on{background:var(--gr);color:#fff;}
+.csd{background:var(--pp);color:var(--pu);border-color:var(--pu);}
+.csd:hover,.csd.on{background:var(--pu);color:#fff;}
+.cse{background:var(--rp);color:var(--rd);border-color:var(--rd);}
+.cse:hover,.cse.on{background:var(--rd);color:#fff;}
+.csf{background:var(--gd);color:var(--gr);border-color:var(--gr);}
+.csf:hover,.csf.on{background:var(--gr);color:#fff;}
+/* MISC */
+.em-row{display:flex;}
+.em-row input{border-radius:8px 0 0 8px;border-right:none;}
+.em-dom{width:150px;border-radius:0 8px 8px 0;background:var(--g50);font-size:12px;border-left:1px solid var(--g200);}
+.caller-row{display:flex;gap:6px;margin-bottom:8px;}
+.cb2{flex:1;padding:10px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;border:2px solid var(--g200);background:var(--g50);color:var(--g600);font-family:var(--f);transition:all .12s;text-align:center;}
+.cb2.on{border-color:var(--blue);background:var(--bp);color:var(--blue);}
+.todo-item{display:flex;align-items:flex-start;gap:10px;padding:10px;border-bottom:1px solid var(--g100);}
+.tch{width:18px;height:18px;border-radius:5px;border:2px solid var(--g300);cursor:pointer;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .12s;}
+.tch.done{background:var(--gr);border-color:var(--gr);color:#fff;}
+.pu2{color:var(--rd);font-size:11px;font-weight:700;}
+.ph2{color:var(--or);font-size:11px;font-weight:700;}
+.pm2{color:var(--blue);font-size:11px;font-weight:700;}
+.tab-row{display:flex;gap:3px;margin-bottom:13px;background:var(--g100);padding:3px;border-radius:9px;width:fit-content;}
+.tab-btn{padding:5px 13px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;color:var(--g600);font-family:var(--f);transition:all .12s;}
+.tab-btn.active{background:#fff;color:var(--navy);box-shadow:0 1px 4px rgba(0,0,0,.1);}
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;}
+.st{font-size:15px;font-weight:800;color:var(--navy);}
+.dv{border:none;border-top:1px solid var(--g100);margin:13px 0;}
+.empty{text-align:center;padding:40px 20px;color:var(--g400);}
+.ei{font-size:36px;margin-bottom:10px;}
+.loading{display:flex;align-items:center;gap:8px;color:var(--g400);font-size:13px;padding:22px;}
+.spin{width:16px;height:16px;border:2px solid var(--g200);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.wisdom{background:linear-gradient(135deg,var(--navy),#1a4a7a);border-radius:10px;padding:14px 18px;color:#fff;margin-bottom:14px;}
+.wl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.45);margin-bottom:5px;}
+.wt{font-size:13px;color:rgba(255,255,255,.88);line-height:1.55;font-style:italic;}
+.chat-wrap{display:flex;flex-direction:column;height:calc(100vh - 130px);}
+.chat-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;background:var(--g50);border-radius:9px;margin-bottom:10px;}
+.cbm{max-width:78%;padding:10px 14px;border-radius:10px;font-size:13px;line-height:1.55;}
+.cbm.user{background:var(--blue);color:#fff;align-self:flex-end;border-bottom-right-radius:3px;}
+.cbm.ai{background:#fff;color:var(--g800);border:1px solid var(--g200);align-self:flex-start;border-bottom-left-radius:3px;}
+.pb{background:var(--bp);color:var(--blue);border:none;padding:4px 10px;border-radius:14px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--f);}
+.pb:hover{background:var(--blue);color:#fff;}
+.tc{background:#fff;border:1px solid var(--g200);border-radius:10px;padding:12px;display:flex;gap:9px;box-shadow:var(--sh);}
+.mb2{padding:8px 12px;border-radius:8px;font-size:13px;margin-bottom:5px;max-width:82%;}
+.mb2.out{background:var(--blue);color:#fff;margin-left:auto;border-bottom-right-radius:2px;}
+.mb2.in{background:var(--g100);color:var(--g800);border-bottom-left-radius:2px;}
+@media(max-width:768px){#sb{width:44px;min-width:44px;}.ni span:not(.ic){display:none;}.ns{display:none;}.logo span:not(:first-child){display:none;}.g4{grid-template-columns:1fr 1fr;}.g3{grid-template-columns:1fr 1fr;}.g2{grid-template-columns:1fr;}.ig{grid-template-columns:1fr;}.ccard-grid{grid-template-columns:repeat(2,1fr);}}
+</style>
+</head>
+<body>
+<nav id="sb">
+  <div class="logo">WEB<span>IGO</span></div>
+  <nav id="snav">
+    <div class="ns">Overview</div>
+    <div class="ni active" data-tab="dashboard"><span class="ic">📊</span><span>Dashboard</span></div>
+    <div class="ni" data-tab="markets"><span class="ic">🌍</span><span>Markets</span></div>
+    <div class="ns">Leads</div>
+    <div class="ni" data-tab="scraper"><span class="ic">🔍</span><span>Scraper</span></div>
+    <div class="ni" data-tab="leads"><span class="ic">👥</span><span>All Leads</span></div>
+    <div class="ni" data-tab="pipeline"><span class="ic">📋</span><span>Pipeline</span></div>
+    <div class="ns">Sales</div>
+    <div class="ni" data-tab="calls"><span class="ic">📞</span><span>Calls</span></div>
+    <div class="ni" data-tab="scripts"><span class="ic">📖</span><span>Scripts</span></div>
+    <div class="ni" data-tab="aichat"><span class="ic">🤖</span><span>AI Chat</span></div>
+    <div class="ns">Work</div>
+    <div class="ni" data-tab="todos"><span class="ic">✅</span><span>To-Do</span></div>
+    <div class="ni" data-tab="video"><span class="ic">🎥</span><span>Video</span></div>
+    <div class="ni" data-tab="tools"><span class="ic">🧰</span><span>Toolbox</span></div>
+  </nav>
+  <div class="sb-bot">v3.0</div>
+</nav>
+
+<div id="main">
+  <div id="topbar">
+    <div class="pt" id="topbar-title">Dashboard</div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div id="clk" style="font-size:13px;color:var(--g600);font-weight:600;"></div>
+      <div class="br" id="hot-badge">0 Hot</div>
+    </div>
+  </div>
+  <div id="con"></div>
+</div>
+
+<div id="lead-modal" class="mov" style="display:none;">
+  <div class="modal">
+    <div class="mnav">
+      <button onclick="navL(-1)" title="Prev (↑)">↑</button>
+      <button onclick="navL(1)" title="Next (↓)">↓</button>
+    </div>
+    <button class="mcl" onclick="closeMod()">✕</button>
+    <div id="mc"></div>
+  </div>
+</div>
+
+<script>
+// ── API HELPERS ────────────────────────────────────────
+const call = async (m,p,b)=>{try{const o={method:m,headers:{'Content-Type':'application/json'}};if(b)o.body=JSON.stringify(b);const r=await fetch(p,o);return r.ok?r.json():null;}catch{return null;}};
+const GET=p=>call('GET',p),POST=(p,b)=>call('POST',p,b),PATCH=(p,b)=>call('PATCH',p,b),DEL=p=>call('DELETE',p);
+
+// ── STATE ──────────────────────────────────────────────
+const S={tab:'dashboard',chat:[],leads:[],idx:0};
+let scraperJobId=null,scraperTimer=null;
+
+// ── CLOCK ──────────────────────────────────────────────
+const tick=()=>{const t=new Date().toLocaleTimeString('en-US',{timeZone:'Europe/Stockholm',hour:'2-digit',minute:'2-digit',hour12:false});document.getElementById('clk').textContent='🇸🇪 '+t;};
+tick();setInterval(tick,15000);
+
+// ── NAV ────────────────────────────────────────────────
+const TITLES={dashboard:'Dashboard',markets:'Markets & Call Times',scraper:'Lead Scraper',leads:'All Leads',pipeline:'Pipeline',calls:'Calls',scripts:'Sales Scripts',aichat:'AI Chat',todos:'To-Do',video:'Demo Video',tools:'Toolbox'};
+document.querySelectorAll('.ni').forEach(el=>el.addEventListener('click',()=>{
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  el.classList.add('active');
+  S.tab=el.dataset.tab;
+  document.getElementById('topbar-title').textContent=TITLES[el.dataset.tab]||'';
+  rnd(el.dataset.tab);
+}));
+const goto=t=>document.querySelector(`[data-tab="${t}"]`)?.click();
+
+async function rnd(tab){
+  const c=document.getElementById('con');
+  c.innerHTML='<div class="loading"><div class="spin"></div> Loading...</div>';
+  const map={dashboard:rdDash,markets:rdMkt,scraper:rdScraper,leads:()=>rdLeads(),pipeline:rdPipe,calls:rdCalls,scripts:rdScripts,aichat:rdChat,todos:rdTodos,video:rdVideo,tools:rdTools};
+  if(map[tab])await map[tab]();
+}
+
+// ── DASHBOARD ──────────────────────────────────────────
+async function rdDash(){
+  const s=await GET('/api/stats');
+  if(!s){document.getElementById('con').innerHTML='<div class="empty"><div class="ei">⚠️</div><div style="font-weight:700;">Cannot reach server.</div><div style="font-size:13px;margin-top:6px;color:var(--g600);">Check Railway logs — server may be restarting.</div></div>';return;}
+  const hot=(s.pipeline?.hot||0)+(s.pipeline?.negotiation||0);
+  document.getElementById('hot-badge').textContent=`${hot} Hot`;
+  document.getElementById('con').innerHTML=`
+    <div class="g4" style="margin-bottom:12px;">
+      <div class="sc rev"><div class="sl">Revenue This Month</div><div class="sv">€${(s.revenue?.month||0).toFixed(0)}</div><div class="ss">€${(s.revenue?.today||0).toFixed(0)} today · €${(s.revenue?.week||0).toFixed(0)} week</div></div>
+      <div class="sc blu"><div class="sl">Leads Today</div><div class="sv">${s.leads?.today||0}</div><div class="ss">${s.leads?.week||0} this week · ${s.leads?.total||0} total</div></div>
+      <div class="sc"><div class="sl">Total Contacted</div><div class="sv">${s.leads?.contacted||0}</div></div>
+      <div class="sc"><div class="sl">Today's Activity</div><div class="sv">${(s.activity?.calls||0)+(s.activity?.emails||0)+(s.activity?.whatsapps||0)}</div><div class="ss">📞${s.activity?.calls||0} ✉️${s.activity?.emails||0} 💬${s.activity?.whatsapps||0}</div></div>
+    </div>
+    <div class="g2">
+      <div class="card">
+        <div class="sh"><div class="st">Pipeline</div><button class="btn bs bsm" onclick="goto('pipeline')">Full →</button></div>
+        ${Object.entries({New:s.pipeline?.new||0,Contacted:s.pipeline?.contacted||0,Responded:s.pipeline?.responded||0,'🔥 Hot':s.pipeline?.hot||0,Negotiation:s.pipeline?.negotiation||0,Closed:s.pipeline?.closed||0}).map(([k,v])=>`
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:7px;">
+            <div style="width:82px;font-size:12px;font-weight:600;color:var(--g600);">${k}</div>
+            <div style="flex:1;background:var(--g100);border-radius:4px;height:6px;"><div style="width:${Math.min(100,v*8)}%;background:var(--blue);height:100%;border-radius:4px;transition:width .4s;"></div></div>
+            <div style="width:24px;text-align:right;font-size:12px;font-weight:700;color:var(--navy);">${v}</div>
+          </div>`).join('')}
+      </div>
+      <div class="card">
+        <div class="sh"><div class="st">🔥 Hot Leads</div><button class="btn bs bsm" onclick="goto('leads')">All →</button></div>
+        <div id="hot-mini"><div class="loading"><div class="spin"></div></div></div>
+      </div>
+    </div>`;
+  const h=await GET('/api/leads?stage=hot&limit=5');
+  const el=document.getElementById('hot-mini');
+  if(el)el.innerHTML=h?.leads?.length?h.leads.map(l=>`<div onclick="openLead(${l.id})" style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--g100);cursor:pointer;"><div><div style="font-weight:700;font-size:13px;color:var(--navy);">${l.name}</div><div style="font-size:11px;color:var(--g400);">${l.category||''} · ${l.city||''}</div></div><span class="stg sh2">🔥 Hot</span></div>`).join(''):'<div class="empty" style="padding:14px;"><div>No hot leads yet.</div></div>';
+}
+
+// ── MARKETS ────────────────────────────────────────────
+async function rdMkt(){
+  const m=await GET('/api/markets/times');if(!m)return;
+  const best={australia:'🔥 Peak: 9–11am & 2–4pm AEST',uk:'🔥 Peak: 9–11am & 2–4pm GMT',us:'🔥 Peak: 10am–12pm & 2–4pm EST',canada:'🔥 Peak: 10am–12pm & 2–4pm EST',norway:'🔥 Peak: 9–11am & 1–3pm CET',finland:'🔥 Peak: 9–11am & 1–3pm EET',denmark:'🔥 Peak: 9–11am & 1–3pm CET',sweden:'Your home base'};
+  document.getElementById('con').innerHTML=`
+    <div class="card" style="margin-bottom:12px;display:flex;gap:18px;align-items:center;">
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--g400);text-transform:uppercase;margin-bottom:3px;">Your Time — Sweden 🇸🇪</div>
+        <div style="font-size:34px;font-weight:800;color:var(--navy);" id="sw-clk">${m.sweden?.localTime||'--:--'}</div>
+      </div>
+      <div style="flex:1;background:var(--bp);border-radius:9px;padding:13px;font-size:12px;color:var(--g800);">
+        <strong style="color:var(--blue);">📞 Rule:</strong> Never wait because of timing. If a market is green — <strong>call NOW.</strong> Peak hours are a bonus, not a gate. Australia open = dial Australia.
+      </div>
+    </div>
+    <div class="g3">${Object.entries(m).filter(([k])=>k!=='sweden').map(([mk,info])=>{
+      const open=info.isBusinessHours&&!info.isWeekend;
+      const peak=open&&info.hour>=9&&info.hour<=11;
+      const cls=peak?'peak':open?'open':'';
+      const sc=info.isWeekend?'mw':peak?'mp':open?'mo':'mc';
+      const st=info.isWeekend?'🌙 Weekend':peak?'🔥 PEAK — DIAL':open?'✓ Open':'Closed';
+      return`<div class="mkt ${cls}"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;"><div style="display:flex;align-items:center;gap:7px;"><span style="font-size:22px;">${info.flag}</span><span style="font-weight:700;font-size:13px;color:var(--navy);text-transform:capitalize;">${mk}</span></div><span class="ms ${sc}">${st}</span></div><div style="font-size:24px;font-weight:800;color:var(--navy);">${info.localTime}</div><div style="font-size:11px;color:var(--g400);margin-top:2px;">${info.localDate}</div><div class="bb">${best[mk]||''}</div></div>`;
+    }).join('')}</div>`;
+  setInterval(()=>{const t=new Date().toLocaleTimeString('en-US',{timeZone:'Europe/Stockholm',hour:'2-digit',minute:'2-digit',hour12:false});const el=document.getElementById('sw-clk');if(el)el.textContent=t;},15000);
+}
+
+// ── SCRAPER ────────────────────────────────────────────
+const CATS=['Restaurant','Salon / Barbershop','Gym / Fitness','Plumber / Electrician','Accountant','Retail Shop','Cleaning Service','Dental / Medical','Auto Repair','Yoga Studio','Photographer','Cafe / Bar'];
+const CATMAP={'Restaurant':'Restaurant','Salon / Barbershop':'Salon','Gym / Fitness':'Gym','Plumber / Electrician':'Plumber','Accountant':'Accountant','Retail Shop':'Retail Shop','Cleaning Service':'Cleaning Service','Dental / Medical':'Dental Clinic','Auto Repair':'Auto Repair','Yoga Studio':'Yoga Studio','Photographer':'Photographer','Cafe / Bar':'Cafe'};
+let selCountry='australia',selCatVal='Restaurant';
+
+async function rdScraper(){
+  const mkt=await GET('/api/markets/times');
+  const peakSet=new Set(Object.entries(mkt||{}).filter(([k,v])=>v.isBusinessHours&&!v.isWeekend&&k!=='sweden').map(([k])=>k));
+
+  document.getElementById('con').innerHTML=`
+    <div class="g2">
+      <div class="card">
+        <div class="st" style="margin-bottom:14px;">🔍 Find Businesses Without Websites</div>
+        <div class="fl" style="margin-bottom:7px;">Select Country</div>
+        <div class="ccard-grid" id="cc-grid">
+          ${[['australia','🇦🇺','Australia'],['uk','🇬🇧','UK'],['us','🇺🇸','USA'],['canada','🇨🇦','Canada'],['sweden','🇸🇪','Sweden'],['norway','🇳🇴','Norway'],['denmark','🇩🇰','Denmark'],['finland','🇫🇮','Finland']].map(([k,f,n])=>`
+            <div class="ccard${k===selCountry?' sel':''}" data-country="${k}" onclick="selC(this,'${k}')">
+              ${peakSet.has(k)?'<span class="cpeak">PEAK</span>':''}
+              <span class="cflag">${f}</span>
+              <div class="cname">${n}</div>
+            </div>`).join('')}
+        </div>
+        <div class="fl" style="margin-bottom:7px;">Business Category</div>
+        <div class="cat-grid" id="cat-grid">
+          ${CATS.map(c=>`<div class="chip${c==='Restaurant'?' sel':''}" data-cat="${c}" onclick="selCat(this,'${c}')">${c}</div>`).join('')}
+        </div>
+        <div class="fg" style="margin-top:4px;"><label class="fl">Target — leads to find</label><input type="number" id="sc-cnt" value="50" min="10" max="200" style="max-width:110px;"></div>
+        <div style="display:flex;gap:8px;margin-top:4px;">
+          <button class="btn bg" onclick="strtScrape()" id="sc-start">🔍 Start Scraping</button>
+          <button class="btn bs" onclick="stpScrape()">⏹ Stop</button>
+        </div>
+        <div style="margin-top:10px;padding:10px;background:var(--gp);border-radius:8px;font-size:12px;color:var(--gr);line-height:1.5;">✅ <strong>Only saves businesses with NO website.</strong><br>Each result is individually checked via Google Places API.</div>
+      </div>
+      <div class="card">
+        <div class="sh"><div class="st">Live Progress</div><div id="sc-status" style="font-size:12px;color:var(--g400);">Not started</div></div>
+        <div style="display:flex;gap:16px;margin-bottom:8px;">
+          <div><div style="font-size:22px;font-weight:800;color:var(--gr);" id="sc-found">0</div><div style="font-size:11px;color:var(--g400);">Saved</div></div>
+          <div><div style="font-size:22px;font-weight:800;color:var(--rd);" id="sc-skip">0</div><div style="font-size:11px;color:var(--g400);">Skipped</div></div>
+          <div style="flex:1;display:flex;align-items:center;">
+            <div style="width:100%;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span id="sc-lbl" style="font-size:11px;color:var(--g600);">—</span><span id="sc-pct" style="font-size:12px;font-weight:700;color:var(--navy);">0%</span></div>
+              <div class="pbw"><div class="pbf" id="pbf" style="width:0%"></div></div>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--g400);margin-bottom:6px;">🟢 Saved (no website) &nbsp; 🔴 Skipped (has website)</div>
+        <div class="slog" id="sc-log"><div class="lsr">Ready. Select country & category, then hit Start.</div></div>
+      </div>
+    </div>`;
+}
+
+function selC(el,k){selCountry=k;document.querySelectorAll('.ccard').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');}
+function selCat(el,c){selCatVal=CATMAP[c]||c;document.querySelectorAll('.chip').forEach(ch=>ch.classList.remove('sel'));el.classList.add('sel');}
+
+async function strtScrape(){
+  const cnt=parseInt(document.getElementById('sc-cnt')?.value)||50;
+  // read selected cat
+  const catEl=document.querySelector('.chip.sel');
+  const catRaw=catEl?.dataset?.cat||'Restaurant';
+  const category=CATMAP[catRaw]||selCatVal||catRaw;
+
+  document.getElementById('sc-status').textContent='Starting...';
+  document.getElementById('sc-start').textContent='⏳ Running...';
+  document.getElementById('sc-start').disabled=true;
+
+  const r=await POST('/api/scrape/start',{country:selCountry,category,targetCount:cnt});
+  if(!r?.jobId){
+    document.getElementById('sc-status').textContent='Failed to start';
+    document.getElementById('sc-start').textContent='🔍 Start Scraping';
+    document.getElementById('sc-start').disabled=false;
+    return;
+  }
+  scraperJobId=r.jobId;
+  if(scraperTimer)clearInterval(scraperTimer);
+  scraperTimer=setInterval(pollScraper,2500);
+}
+
+async function pollScraper(){
+  if(!scraperJobId)return;
+  const d=await GET('/api/scrape/progress/'+scraperJobId);
+  if(!d)return;
+  const pct=Math.min(100,d.target>0?Math.round((d.found/d.target)*100):0);
+  const el=id=>document.getElementById(id);
+  if(el('sc-found'))el('sc-found').textContent=d.found||0;
+  if(el('sc-skip'))el('sc-skip').textContent=d.skipped||0;
+  if(el('pbf'))el('pbf').style.width=pct+'%';
+  if(el('sc-pct'))el('sc-pct').textContent=pct+'%';
+  if(el('sc-lbl')&&d.city)el('sc-lbl').textContent=`${d.category||''} in ${d.city}`;
+  const log=el('sc-log');
+  if(log&&d.log?.length){
+    log.innerHTML=d.log.slice(0,60).map(e=>`<div class="${e.t==='found'?'lf':e.t==='done'?'ldt':e.t==='skip'?'lsk':'lsr'}">${e.m}</div>`).join('');
+  }
+  if(d.status==='done'||d.status==='stopped'){
+    clearInterval(scraperTimer);scraperTimer=null;
+    if(el('sc-status'))el('sc-status').textContent=d.status==='done'?`✅ Done! ${d.found} leads`:'⏹ Stopped';
+    if(el('sc-start')){el('sc-start').textContent='🔍 Start Scraping';el('sc-start').disabled=false;}
+  } else if(el('sc-status')){
+    el('sc-status').textContent=`🔄 Running...`;
+  }
+}
+
+function stpScrape(){
+  if(scraperJobId)POST('/api/scrape/stop',{jobId:scraperJobId});
+  if(scraperTimer){clearInterval(scraperTimer);scraperTimer=null;}
+  scraperJobId=null;
+  const el=document.getElementById('sc-start');
+  if(el){el.textContent='🔍 Start Scraping';el.disabled=false;}
+}
+
+// ── LEADS ──────────────────────────────────────────────
+async function rdLeads(co='',cat='',stg='',srch=''){
+  const p=new URLSearchParams({limit:500});
+  if(co)p.set('country',co);if(cat)p.set('category',cat);if(stg)p.set('stage',stg);if(srch)p.set('search',srch);
+  const data=await GET('/api/leads?'+p);
+  const leads=data?.leads||[];S.leads=leads;
+  const cos=[...new Set(leads.map(l=>l.country).filter(Boolean))];
+  const cats=[...new Set(leads.map(l=>l.category).filter(Boolean))];
+  const pill=l=>{if(!l.last_contacted&&!l.call_outcome)return'<span class="cpill cpn">Not called</span>';const m={called:'cpc',noanswer:'cpna',interested:'cpi',callback:'cpi',notinterested:'cpn',closed:'cpi'};const lb={called:'✓ Called',noanswer:'📵 No Answer',interested:'🔥 Interested',callback:'📅 Callback',notinterested:'Not Int.',closed:'✓ Closed'};const k=l.call_outcome||'called';return`<span class="cpill ${m[k]||'cpc'}">${lb[k]||'Called'}</span>`;};
+  document.getElementById('con').innerHTML=`
+    <div class="card" style="margin-bottom:10px;padding:10px 13px;">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+        <input type="text" placeholder="🔍 Search name, city, phone..." style="width:200px;" id="ls" value="${srch}" oninput="dSearch()">
+        <select id="fc" onchange="applyF()" style="width:120px;"><option value="">All Countries</option>${cos.map(c=>`<option value="${c}" ${c===co?'selected':''}>${c}</option>`).join('')}</select>
+        <select id="fcat" onchange="applyF()" style="width:140px;"><option value="">All Categories</option>${cats.map(c=>`<option value="${c}" ${c===cat?'selected':''}>${c}</option>`).join('')}</select>
+        <select id="fst" onchange="applyF()" style="width:120px;"><option value="">All Stages</option>${['new','contacted','responded','hot','negotiation','demo','closed','lost'].map(s=>`<option value="${s}" ${s===stg?'selected':''}>${s}</option>`).join('')}</select>
+        <span style="font-size:12px;color:var(--g400);margin-left:auto;">${data?.total||0} total · ${leads.length} shown</span>
+      </div>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden;">
+      ${leads.length===0?'<div class="empty"><div class="ei">🔍</div><div style="font-weight:700;">No leads yet.</div><div style="font-size:13px;margin-top:6px;">Head to the Scraper tab to find businesses.</div></div>':`
+      <div style="overflow-x:auto;"><table class="lt">
+        <thead><tr><th style="width:42px;"></th><th>Business</th><th>Category</th><th>Location</th><th>Phone</th><th>Stage</th><th>Call Status</th></tr></thead>
+        <tbody>${leads.map((l,i)=>`
+          <tr onclick="openByIdx(${i})">
+            <td><div class="lpic">${l.photo_url?`<img src="${l.photo_url}" alt="" loading="lazy">`:'🏪'}</div></td>
+            <td><div class="ln">${l.name}</div><div class="lc">${l.city||''}</div></td>
+            <td style="font-size:12px;color:var(--g600);">${l.category||'-'}</td>
+            <td style="font-size:12px;">${l.country||'-'}</td>
+            <td>${l.phone?`<a href="tel:${l.phone}" style="color:var(--blue);font-weight:600;font-size:12px;" onclick="event.stopPropagation()">${l.phone}</a>`:'-'}</td>
+            <td><span class="stg ${stageClass(l.stage)}">${l.stage}</span></td>
+            <td>${pill(l)}</td>
+          </tr>`).join('')}</tbody>
+      </table></div>`}
+    </div>`;
+}
+const stageClass=s=>({new:'sn',contacted:'sc2',responded:'sr',hot:'sh2',negotiation:'sng',demo:'sd',closed:'scl',lost:'sls'}[s]||'sn');
+let dST;function dSearch(){clearTimeout(dST);dST=setTimeout(applyF,350);}
+function applyF(){rdLeads(document.getElementById('fc')?.value||'',document.getElementById('fcat')?.value||'',document.getElementById('fst')?.value||'',document.getElementById('ls')?.value||'');}
+
+// ── PIPELINE ───────────────────────────────────────────
+async function rdPipe(){
+  const data=await GET('/api/leads?limit=500');const leads=data?.leads||[];
+  const stages=[{k:'new',l:'New Lead',c:'#64748B'},{k:'contacted',l:'Contacted',c:'#2563EB'},{k:'responded',l:'Responded',c:'#D97706'},{k:'hot',l:'🔥 Hot',c:'#DC2626'},{k:'negotiation',l:'💰 Negotiation',c:'#7C3AED'},{k:'demo',l:'Demo Sent',c:'#059669'},{k:'closed',l:'✓ Closed',c:'#16A34A'},{k:'lost',l:'Lost',c:'#94A3B8'}];
+  const g={};for(const s of stages)g[s.k]=leads.filter(l=>l.stage===s.k);
+  document.getElementById('con').innerHTML=`<div class="pipeline">${stages.map(s=>`<div class="pc"><div class="pct" style="color:${s.c};">${s.l}<span class="pcn">${g[s.k].length}</span></div>${g[s.k].length===0?'<div style="font-size:11px;color:var(--g400);text-align:center;padding:8px;">Empty</div>':g[s.k].map(l=>`<div class="pcard" onclick="openLead(${l.id})"><div style="font-weight:700;color:var(--navy);margin-bottom:2px;">${l.name}</div><div style="color:var(--g400);font-size:11px;">${l.category||''} · ${l.city||''}</div></div>`).join('')}</div>`).join('')}</div>`;
+}
+
+// ── MODAL ──────────────────────────────────────────────
+function openByIdx(i){S.idx=i;openLead(S.leads[i].id);}
+function navL(d){const n=S.idx+d;if(n>=0&&n<S.leads.length){S.idx=n;openLead(S.leads[n].id);}}
+document.addEventListener('keydown',e=>{if(document.getElementById('lead-modal').style.display!=='none'){if(e.key==='ArrowUp'){e.preventDefault();navL(-1);}if(e.key==='ArrowDown'){e.preventDefault();navL(1);}if(e.key==='Escape')closeMod();}});
+
+async function openLead(id){
+  document.getElementById('lead-modal').style.display='flex';
+  document.getElementById('mc').innerHTML='<div class="loading"><div class="spin"></div> Loading lead...</div>';
+  const l=await GET(`/api/leads/${id}`);if(!l)return;
+  const qs=parseSafe(l.qualifying_questions,[]);
+  const co=l.call_outcome||'';
+  const nav=`${S.idx+1} / ${S.leads.length}`;
+  document.getElementById('mc').innerHTML=`
+    <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;padding-right:140px;">
+      <div style="width:60px;height:60px;border-radius:10px;overflow:hidden;flex-shrink:0;background:var(--g100);display:flex;align-items:center;justify-content:center;font-size:26px;">
+        ${l.photo_url?`<img src="${l.photo_url}" style="width:100%;height:100%;object-fit:cover;">`:'🏪'}
+      </div>
+      <div style="flex:1;">
+        <div style="font-size:10px;color:var(--g400);margin-bottom:2px;">${nav} &nbsp;·&nbsp; ↑↓ to navigate</div>
+        <h2 style="font-size:19px;font-weight:800;color:var(--navy);margin-bottom:2px;">${l.name}</h2>
+        <div style="font-size:13px;color:var(--g400);">${l.category||''} · ${l.city||''}, ${l.country||''}</div>
+        ${l.google_reviews>0?`<div style="font-size:12px;color:#F59E0B;margin-top:2px;">★ ${l.google_rating||''} (${l.google_reviews} reviews)</div>`:''}
+      </div>
+    </div>
+    <div class="msec">Stage</div>
+    <div class="sp-wrap">${['new','contacted','responded','hot','negotiation','demo','closed','lost'].map(s=>`<button class="sp stg ${stageClass(s)} ${l.stage===s?'active':''}" onclick="setStg(${id},'${s}',this)">${s}</button>`).join('')}</div>
+    <div class="dv"></div>
+    <div class="dial-row">
+      ${l.phone?`<a href="tel:${l.phone}" class="dc">📞 ${l.phone}</a>`:'<span style="font-size:12px;color:var(--g400);">No phone found</span>'}
+      ${l.phone?`<a href="https://wa.me/${l.phone.replace(/\D/g,'')}" target="_blank" class="dw">💬 WhatsApp</a>`:''}
+      <button class="btn brd bsm" onclick="delLead(${id})">🗑 Delete</button>
+    </div>
+    <div class="msec">Quick Call Outcome</div>
+    <div class="cs-row">
+      <button class="cs csa ${co==='called'?'on':''}" onclick="setCO(${id},'called',this)">✓ Called</button>
+      <button class="cs csb ${co==='noanswer'?'on':''}" onclick="setCO(${id},'noanswer',this)">📵 No Answer</button>
+      <button class="cs csc ${co==='interested'?'on':''}" onclick="setCO(${id},'interested',this)">🔥 Interested!</button>
+      <button class="cs csd ${co==='callback'?'on':''}" onclick="setCO(${id},'callback',this)">📅 Callback</button>
+      <button class="cs cse ${co==='notinterested'?'on':''}" onclick="setCO(${id},'notinterested',this)">✗ Not Int.</button>
+      <button class="cs csf ${co==='closed'?'on':''}" onclick="setCO(${id},'closed',this)">💰 CLOSED!</button>
+    </div>
+    <div class="dv"></div>
+    <div class="ig">
+      <div><div class="il">Phone</div><div class="iv">${l.phone||'—'}</div></div>
+      <div><div class="il">Owner</div><div class="iv">${l.owner_name||'—'}</div></div>
+      <div><div class="il">Address</div><div class="iv" style="font-size:12px;">${l.address||'—'}</div></div>
+      <div><div class="il">Google</div><div class="iv">${l.google_reviews?`★ ${l.google_rating} (${l.google_reviews} reviews)`:'—'}</div></div>
+    </div>
+    <div class="msec">Email</div>
+    <div>
+      <div class="em-row">
+        <input type="text" id="em-l" placeholder="name or prefix" value="${l.email?l.email.split('@')[0]:''}">
+        <select id="em-d" class="em-dom">
+          <option value="">@ custom</option>
+          <option value="@gmail.com">@gmail.com</option>
+          <option value="@icloud.com">@icloud.com</option>
+          <option value="@hotmail.com">@hotmail.com</option>
+          <option value="@outlook.com">@outlook.com</option>
+          <option value="@yahoo.com">@yahoo.com</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:6px;">
+        <input type="text" id="em-c" placeholder="or full: name@business.com" style="font-size:12px;" value="${l.email||''}">
+        <button class="btn bs bsm" onclick="saveEm(${id})">Save</button>
+      </div>
+    </div>
+    ${qs.length?`<div class="msec">Qualifying Questions</div><div>${qs.map((q,i)=>`<div style="padding:7px 10px;background:var(--g50);border-left:3px solid var(--blue);border-radius:0 7px 7px 0;margin-bottom:5px;font-size:13px;">${i+1}. ${q}</div>`).join('')}</div>`:''}
+    ${l.messages?.length?`<div class="msec">Message History</div><div style="max-height:140px;overflow-y:auto;padding:8px;background:var(--g50);border-radius:8px;">${l.messages.map(m=>`<div class="mb2 ${m.direction==='out'?'out':'in'}">${m.content}<div style="font-size:10px;opacity:.65;margin-top:2px;">${m.channel} · ${new Date(m.sent_at).toLocaleString()}</div></div>`).join('')}</div>`:''}
+    <div id="ai-box">${l.ai_analysis?`<div class="aib"><div class="aibl">🤖 AI Analysis</div><div class="aibt">${l.ai_analysis}</div></div>`:''}</div>
+    <div class="dv"></div>
+    <div class="msec">Log Outreach / AI Tools</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+      <select id="msg-ch" style="width:130px;font-size:12px;"><option value="whatsapp">💬 WhatsApp</option><option value="email">✉️ Email</option><option value="sms">📱 SMS</option><option value="call">📞 Call note</option></select>
+      <button class="btn bs bsm" onclick="aiDraft(${id})">🤖 Draft</button>
+      <button class="btn bs bsm" onclick="aiAnalyze(${id})">📊 Analyze</button>
+      <button class="btn bs bsm" onclick="aiQs(${id})">❓ Questions</button>
+      <button class="btn bn bsm" onclick="vidPmt(${id})">🎥 Video</button>
+    </div>
+    <textarea id="msg-txt" placeholder="Message content or call notes..."></textarea>
+    <button class="btn bp bsm" style="margin-top:7px;" onclick="sendMsg(${id})">Log / Send</button>
+    ${l.calls?.length?`<div class="msec">Call Log</div>${l.calls.map(c=>`<div style="padding:8px;background:var(--g50);border-radius:7px;margin-bottom:5px;font-size:12px;"><strong>${c.caller||'?'} · ${new Date(c.called_at).toLocaleDateString()} · ${c.outcome||''}</strong>${c.price_discussed?` · €${c.price_discussed}`:''}${c.summary?`<div style="color:var(--g600);margin-top:2px;">${c.summary}</div>`:''}</div>`).join('')}`:``}
+    <div id="vid-out"></div>
+  `;
+}
+
+const parseSafe=(s,f)=>{try{return JSON.parse(s||'null')||f;}catch{return f;}};
+function closeMod(){document.getElementById('lead-modal').style.display='none';}
+async function setStg(id,stage,btn){document.querySelectorAll('.sp').forEach(b=>b.classList.remove('active'));btn.classList.add('active');await PATCH(`/api/leads/${id}`,{stage});}
+async function setCO(id,o,btn){document.querySelectorAll('.cs').forEach(b=>b.classList.remove('on'));btn.classList.add('on');const sm={interested:'hot',closed:'closed',notinterested:'lost',noanswer:'contacted',called:'contacted',callback:'contacted'};await PATCH(`/api/leads/${id}`,{call_outcome:o,last_contacted:new Date().toISOString()});if(sm[o])await PATCH(`/api/leads/${id}`,{stage:sm[o]});}
+async function saveEm(id){const c=document.getElementById('em-c')?.value?.trim(),l2=document.getElementById('em-l')?.value?.trim(),d=document.getElementById('em-d')?.value;const email=c||(l2&&d?l2+d:null);if(!email)return alert('Enter an email.');await PATCH(`/api/leads/${id}`,{email});const btn=event.target;btn.textContent='✓';setTimeout(()=>btn.textContent='Save',1500);}
+async function sendMsg(id){const ch=document.getElementById('msg-ch')?.value,content=document.getElementById('msg-txt')?.value?.trim();if(!content)return;await POST(`/api/leads/${id}/message`,{channel:ch,content});document.getElementById('msg-txt').value='';const btn=event.target;btn.textContent='✓ Logged!';setTimeout(()=>btn.textContent='Log / Send',1500);}
+async function aiDraft(id){const btn=event.target;btn.textContent='...';const ch=document.getElementById('msg-ch')?.value;const r=await POST('/api/ai/suggest-reply',{leadId:id,channel:ch});if(r?.suggestion)document.getElementById('msg-txt').value=r.suggestion;btn.textContent='🤖 Draft';}
+async function aiAnalyze(id){const btn=event.target;btn.textContent='...';const r=await POST('/api/ai/analyze-lead',{leadId:id});btn.textContent='📊 Analyze';if(r?.analysis)document.getElementById('ai-box').innerHTML=`<div class="aib" style="margin-top:8px;"><div class="aibl">🤖 AI Analysis</div><div class="aibt">${r.analysis}</div></div>`;}
+async function aiQs(id){const btn=event.target;btn.textContent='...';const r=await POST('/api/ai/warmup-questions',{leadId:id});btn.textContent='❓ Questions';if(r?.questions)alert('Qualifying Questions:\n\n'+r.questions.join('\n'));}
+async function vidPmt(id){const r=await POST('/api/video/generate-prompt',{leadId:id});if(r)document.getElementById('vid-out').innerHTML=`<div class="aib" style="margin-top:10px;"><div class="aibl">🎥 Video Prompt &nbsp;<a href="${r.openclaw_url||'https://openclaw.unloopa.com'}" target="_blank" style="color:var(--blue);">Open openclaw →</a></div><div class="aibt">${r.primary||''}\n\nAlt: ${r.secondary||''}</div></div>`;}
+async function delLead(id){if(!confirm('Delete this lead?'))return;await DEL(`/api/leads/${id}`);closeMod();rdLeads();}
+
+// ── CALLS ──────────────────────────────────────────────
+async function rdCalls(){
+  const calls=await GET('/api/calls');
+  const ws=['Value before price. Always.','Get 3 yeses in the first 60 seconds.','One small joke early changes the whole call.','Silence after a question is power. Never fill it.','End every call with a clear next step.','Say their business name. It matters to them.','Make it risk-free. Pay only if they love it.','Tell them what they lose without a website.'];
+  const w=ws[Math.floor(Math.random()*ws.length)];
+  document.getElementById('con').innerHTML=`
+    <div class="wisdom"><div class="wl">💡 Before you dial</div><div class="wt">"${w}"</div></div>
+    <div class="g2">
+      <div class="card">
+        <div class="st" style="margin-bottom:12px;">Log a Call</div>
+        <div class="fg"><label class="fl">Who is calling?</label>
+          <div class="caller-row">
+            <button class="cb2 on" id="cb-b" onclick="selCaller('Bamba')">🎤 Bamba</button>
+            <button class="cb2" id="cb-l" onclick="selCaller('Lewis')">🎤 Lewis</button>
+          </div>
+          <input type="hidden" id="caller-v" value="Bamba">
+        </div>
+        <div class="fg"><label class="fl">Business Name</label><input type="text" id="call-biz" placeholder="Type name to find lead or enter manually..."></div>
+        <div class="fg"><label class="fl">Outcome</label>
+          <select id="call-out">
+            <option value="called">Called — Spoke to them</option>
+            <option value="noanswer">No Answer</option>
+            <option value="interested">🔥 Interested</option>
+            <option value="callback">Callback requested</option>
+            <option value="notinterested">Not interested</option>
+            <option value="closed">💰 CLOSED!</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">Price Discussed (€)</label><input type="number" id="call-price" placeholder="0"></div>
+        <div class="fg"><label class="fl">Notes</label><textarea id="call-notes" placeholder="Key points from the call..."></textarea></div>
+        <button class="btn bp" onclick="logCall()">Log Call</button>
+      </div>
+      <div class="card">
+        <div class="st" style="margin-bottom:12px;">Recent Calls (${calls?.length||0})</div>
+        ${!calls?.length?'<div class="empty" style="padding:20px;"><div>No calls yet.</div></div>':calls.slice(0,15).map(c=>`<div style="padding:9px 0;border-bottom:1px solid var(--g100);"><div style="display:flex;justify-content:space-between;"><div style="font-weight:700;font-size:13px;color:var(--navy);">${c.lead_name||c.business_name||'Unknown'}</div><div style="font-size:11px;color:var(--g400);">${new Date(c.called_at).toLocaleDateString()}</div></div><div style="font-size:12px;color:var(--g600);">${c.caller||''} · ${c.outcome||''} ${c.price_discussed?'· €'+c.price_discussed:''}</div>${c.summary?`<div style="font-size:12px;color:var(--g400);margin-top:2px;">${c.summary}</div>`:''}</div>`).join('')}
+      </div>
+    </div>`;
+}
+function selCaller(n){document.getElementById('caller-v').value=n;document.getElementById('cb-b').className='cb2'+(n==='Bamba'?' on':'');document.getElementById('cb-l').className='cb2'+(n==='Lewis'?' on':'');}
+async function logCall(){
+  const caller=document.getElementById('caller-v').value,biz=document.getElementById('call-biz').value.trim(),out=document.getElementById('call-out').value,price=document.getElementById('call-price').value||null,notes=document.getElementById('call-notes').value.trim();
+  if(!biz)return alert('Enter the business name.');
+  const r=await POST('/api/calls',{caller,business_name:biz,outcome:out,price_discussed:price,summary:notes});
+  if(r){const btn=event.target;btn.textContent='✓ Logged!';setTimeout(()=>{btn.textContent='Log Call';rdCalls();},1200);}
+}
+
+// ── SCRIPTS ───────────────────────────────────────────
+async function rdScripts(){
+  document.getElementById('con').innerHTML=`<div class="tab-row"><button class="tab-btn active" onclick="showSc('call',this)">📞 Call</button><button class="tab-btn" onclick="showSc('wa',this)">💬 WhatsApp</button><button class="tab-btn" onclick="showSc('email',this)">✉️ Email</button></div><div id="sc-body"></div>`;
+  showSc('call',document.querySelector('.tab-btn.active'));
+}
+function showSc(t,btn){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+  const scripts={
+    call:`<div class="card"><div class="st" style="margin-bottom:14px;">📞 Cold Call Script</div><div class="wisdom"><div class="wl">Mindset</div><div class="wt">"You're not selling. You're offering a solution to a problem costing them money every single day."</div></div>${[['1. Opening (5 sec)','\"Hey, is this [Name]? Hey, I\'m [your name] — got 60 seconds?\"'],['2. Warm Up','\"Found you on Google Maps. You\'ve got [X] stars — that\'s solid. How long have you been running the place?\"'],['3. The Yes Ladder','\"Most customers find you word of mouth, right? ... When someone hears about you, first thing they do is Google you? ... And no website sometimes means they go elsewhere instead — yeah?\"'],['4. Value Reveal','\"That\'s exactly why I\'m calling. We build professional websites for local businesses — takes about a week, looks incredible, and clients usually start getting new customers within the first month.\"'],['5. Objections','<b>\"Don\'t need one\"</b> → \"How many new customers came from Google last month?\"<br><b>\"Too expensive\"</b> → \"One new customer pays for it. What\'s your average sale?\"<br><b>\"Have someone\"</b> → \"Is it ranking on Google? Most sites look good but nobody finds them.\"'],['6. The Close','\"Let me build you a free demo — zero commitment. If you love it, great. If not, no worries at all. Fair enough?<br><br><b>Hard close:</b> We\'re running a special this week — everything for €[price], one payment. Got 10 minutes tomorrow for the demo?\"']].map(([t2,b])=>`<div style="margin-bottom:13px;"><div style="font-size:12px;font-weight:800;text-transform:uppercase;color:var(--blue);margin-bottom:5px;">${t2}</div><div style="font-size:13px;line-height:1.7;padding:10px;background:var(--g50);border-radius:7px;">${b}</div></div>`).join('')}</div>`,
+    wa:`<div class="card"><div class="st" style="margin-bottom:14px;">💬 WhatsApp 3-Message Sequence</div>${[['Message 1 — First Contact','Hey [Name]! 👋 Found [Business] on Google Maps — love the reviews. I build websites for local businesses and wanted to reach out. Do you currently have a website? 🌐'],['Message 2 — Follow Up (24h later)','Just following up! I checked online and couldn\'t find a website for [Business]. We help businesses like yours get found on Google and get more customers every month. Happy to show you a free demo — 5 minutes. Interested? 🚀'],['Message 3 — Final (48h later)','Last one I promise 😄 — I put together a quick demo of what [Business]\'s website could look like. Here\'s the link: [DEMO LINK]. No pressure, completely free to look. If you love it, we chat. 👊']].map(([t2,b])=>`<div style="margin-bottom:14px;"><div style="font-size:12px;font-weight:800;text-transform:uppercase;color:var(--wa);margin-bottom:5px;">${t2}</div><div style="font-size:13px;line-height:1.7;background:var(--gp);border-radius:7px;padding:12px;">${b}</div></div>`).join('')}</div>`,
+    email:`<div class="card"><div class="st" style="margin-bottom:14px;">✉️ Email Templates</div><div style="margin-bottom:8px;font-size:12px;font-weight:600;color:var(--g600);">Subject lines:</div><div style="margin-bottom:14px;">${['Quick question about [Business Name]','I searched for you and couldn\'t find you','Your competitors are getting your customers'].map(s=>`<div style="padding:7px 10px;background:var(--op);border-radius:5px;font-size:13px;font-weight:600;margin-bottom:5px;">✉️ ${s}</div>`).join('')}</div>${[['Cold Outreach','Hi [Name],<br><br>I came across [Business] on Google Maps — you\'ve got some really strong reviews, which tells me you\'re doing great work.<br><br>I noticed there\'s no website. That might be costing you new customers every week who search online, can\'t find you, and go to a competitor instead.<br><br>We build professional websites for local businesses — fast, affordable, and focused on getting you found on Google.<br><br>Would you be open to a quick 10-minute call this week? No pressure at all.<br><br>Best,<br>[Your Name]'],['Follow Up (3 days)','Hi [Name],<br><br>Just following up from earlier this week.<br><br>I actually put together a quick concept of what [Business]\'s website could look like — happy to send it over if you\'re curious.<br><br>Takes 2 minutes to look at and you might love it.<br><br>[Your Name]']].map(([t2,b])=>`<div style="margin-bottom:16px;"><div style="font-size:12px;font-weight:800;text-transform:uppercase;color:var(--blue);margin-bottom:5px;">${t2}</div><div style="font-size:13px;line-height:1.8;background:var(--g50);border-radius:7px;padding:13px;">${b}</div></div>`).join('')}</div>`
+  };
+  document.getElementById('sc-body').innerHTML=scripts[t]||'';
+}
+
+// ── AI CHAT ───────────────────────────────────────────
+function rdChat(){
+  document.getElementById('con').innerHTML=`
+    <div class="chat-wrap">
+      <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;">${['Hot Leads','Follow Ups','Draft Email','Handle Objections','What to do now','Best opener for Australia'].map(p=>`<button class="pb" onclick="chatP('${p}')">${p}</button>`).join('')}</div>
+      <div id="chat-msgs" class="chat-msgs"><div class="cbm ai">Hey! I\'m your AI sales assistant. Ask me anything — hot leads, email drafts, objection handling, or just "what should I do right now?"</div></div>
+      <div style="display:flex;gap:8px;"><input type="text" id="chat-in" placeholder="Ask anything..." onkeydown="if(event.key==='Enter')sendChat()"><button class="btn bp" onclick="sendChat()">Send</button></div>
+    </div>`;
+}
+async function chatP(p){document.getElementById('chat-in').value=p;sendChat();}
+async function sendChat(){
+  const inp=document.getElementById('chat-in');const msg=inp.value.trim();if(!msg)return;inp.value='';
+  S.chat.push({role:'user',content:msg});
+  const msgs=document.getElementById('chat-msgs');
+  msgs.innerHTML+=`<div class="cbm user">${msg}</div><div class="cbm ai" id="ai-t">...</div>`;
+  msgs.scrollTop=msgs.scrollHeight;
+  const r=await POST('/api/ai/chat',{messages:S.chat,context:'You are Webigo, an AI sales assistant for a web design agency targeting local businesses without websites. Be direct, motivating, practical. Focus on getting deals closed today.'});
+  const reply=r?.reply||'Error — check your Anthropic API key in Railway Variables.';
+  S.chat.push({role:'assistant',content:reply});
+  const el=document.getElementById('ai-t');if(el)el.innerHTML=reply.replace(/\n/g,'<br>');
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+// ── TODOS ──────────────────────────────────────────────
+async function rdTodos(){
+  const todos=await GET('/api/todos');
+  document.getElementById('con').innerHTML=`
+    <div class="sh"><div class="st">Today\'s To-Do</div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn bs bsm" onclick="genTodos(this)">🤖 Regenerate</button>
+        <button class="btn bp bsm" onclick="addTodo()">+ Add</button>
+      </div>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden;" id="todo-list">
+      ${!todos?.length?'<div class="empty"><div class="ei">✅</div><div>Click Regenerate to generate your daily list.</div></div>':todos.map(t=>`<div class="todo-item"><div class="tch ${t.completed?'done':''}" onclick="togTodo(${t.id},this)">${t.completed?'✓':''}</div><div style="flex:1;"><div style="font-size:13px;font-weight:600;${t.completed?'text-decoration:line-through;color:var(--g400);':''};">${t.title}</div>${t.description?`<div style="font-size:12px;color:var(--g400);margin-top:2px;">${t.description}</div>`:''}</div><span class="${t.priority==='urgent'?'pu2':t.priority==='high'?'ph2':'pm2'}">${t.priority||''}</span></div>`).join('')}
+    </div>`;
+}
+async function genTodos(btn){const orig=btn.textContent;btn.textContent='...';await POST('/api/todos/generate',{});btn.textContent=orig;rdTodos();}
+async function togTodo(id,el){el.classList.toggle('done');el.textContent=el.classList.contains('done')?'✓':'';await PATCH(`/api/todos/${id}`,{completed:el.classList.contains('done')});}
+async function addTodo(){const t=prompt('New task:');if(t){await POST('/api/todos',{title:t,priority:'medium'});rdTodos();}}
+
+// ── VIDEO ──────────────────────────────────────────────
+function rdVideo(){
+  document.getElementById('con').innerHTML=`
+    <div class="g2">
+      <div class="card">
+        <div class="st" style="margin-bottom:12px;">🎥 Generate Video Prompt</div>
+        <div class="fg"><label class="fl">Lead ID or Business Name</label><input type="text" id="vid-l" placeholder="Lead ID or business name..."></div>
+        <button class="btn bp" onclick="genVid()">Generate Prompt</button>
+        <div id="vid-r" style="margin-top:12px;"></div>
+      </div>
+      <div class="card">
+        <div class="st" style="margin-bottom:10px;">📋 How To</div>
+        ${['Go to openclaw.unloopa.com → New project','Paste primary prompt as description','Paste secondary as context/backup','Upload business logo/photos if available','Generate — takes 2–5 min','Download MP4 → send via WhatsApp','Log demo as sent in lead history'].map((s,i)=>`<div style="display:flex;gap:10px;margin-bottom:8px;font-size:13px;"><div style="width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">${i+1}</div><div>${s}</div></div>`).join('')}
+      </div>
+    </div>`;
+}
+async function genVid(){const v=document.getElementById('vid-l').value.trim();const r=await POST('/api/video/generate-prompt',{leadId:parseInt(v)||null,businessName:v});if(r)document.getElementById('vid-r').innerHTML=`<div class="aib"><div class="aibl">🎥 Prompts — <a href="${r.openclaw_url||'https://openclaw.unloopa.com'}" target="_blank" style="color:var(--blue);">Open openclaw →</a></div><div class="aibt">${r.primary||''}\n\nAlt: ${r.secondary||''}</div></div>`;}
+
+// ── TOOLS ──────────────────────────────────────────────
+function rdTools(){
+  const tools=[{i:'🤖',n:'Anthropic Console',d:'Manage Claude API key and billing.',l:'https://console.anthropic.com'},{i:'🗺️',n:'Google Maps API',d:'Manage Maps API key in Google Cloud Console.',l:'https://console.cloud.google.com'},{i:'📱',n:'Twilio',d:'SMS and WhatsApp messaging.',l:'https://console.twilio.com'},{i:'✉️',n:'SendGrid',d:'Email delivery service.',l:'https://app.sendgrid.com'},{i:'🚂',n:'Railway',d:'Your hosting — logs, variables, deploys.',l:'https://railway.app'},{i:'🐙',n:'GitHub',d:'webigo-agent code repo.',l:'https://github.com/B2ODD/webigo-agent'},{i:'🎥',n:'openclaw',d:'Generate demo videos for leads.',l:'https://openclaw.unloopa.com'},{i:'🌐',n:'Namecheap',d:'Buy domains for clients.',l:'https://namecheap.com'},{i:'⚡',n:'Vercel',d:'Deploy client websites free.',l:'https://vercel.com'},{i:'🏗️',n:'Carrd',d:'Quick one-page demo sites.',l:'https://carrd.co'}];
+  document.getElementById('con').innerHTML=`<div class="g3">${tools.map(t=>`<div class="tc"><div style="font-size:22px;flex-shrink:0;">${t.i}</div><div><div style="font-weight:700;color:var(--navy);font-size:13px;">${t.n}</div><div style="font-size:12px;color:var(--g600);margin-top:2px;line-height:1.5;">${t.d}</div><a href="${t.l}" target="_blank" style="font-size:12px;color:var(--blue);font-weight:600;margin-top:4px;display:inline-block;">Open →</a></div></div>`).join('')}</div>`;
+}
+
+rnd('dashboard');
+</script>
+</body>
+</html>
